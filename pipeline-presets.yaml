@@ -1,0 +1,20 @@
+# Pipeline-behavior presets, scoped per pipeline.
+#
+# Each entry is namespaced under a pipeline name (slide, infographic) because
+# different pipelines accept different flags.
+#
+# Usage:
+#   uv run polyptych deck sources/x.md --output-dir generated/x \
+#       --image-preset gem --pipeline-preset fast
+#
+# Boolean flags are additive — a preset can set a store_true flag to true,
+# but cannot un-set a flag the user passed.
+#
+# Non-boolean values (critique-rounds, to, ...) apply whenever the user did
+# not pass the flag explicitly; an explicit CLI flag always wins.
+
+slide:
+  fast:        { concurrent: 10, producers: 5 }
+
+infographic:
+  critique:    { critique: true }   # one round (the documented default); add critique-rounds: N here for more

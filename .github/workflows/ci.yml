@@ -1,0 +1,41 @@
+name: CI
+
+# Gates pull requests (and pushes to main) on lint + typecheck + unit tests.
+#
+# All dependencies (including pixbridge) resolve from PyPI, so the runner needs
+# no special access. Integration tests (@pytest.mark.integration) are excluded:
+# they call real LLM / image APIs and cost money per run.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Lint (ruff)
+        run: uv run ruff check src/
+
+      - name: Type check (pyright)
+        run: uv run pyright src/
+
+      - name: Tests (pytest, excluding integration)
+        run: uv run pytest -m "not integration" tests/

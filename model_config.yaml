@@ -1,0 +1,58 @@
+# LLM Model Configuration
+# Separates provider model names (outside) from task complexity mapping (inside).
+#
+# Resolution order: --model flag > $POLYPTYCH_MODEL env var (deprecated alias $SLIDE_GEN_MODEL) > config tiers below.
+# When --model or $POLYPTYCH_MODEL is set, both tiers are overridden to that value.
+
+# Which model to use for each tier, per LLM provider
+providers:
+  gemini:
+    fast: gemini-3.5-flash
+    thinking: gemini-3.1-pro-preview
+  openai:
+    fast: gpt-5.5
+    thinking: gpt-5.5-pro
+  xai:
+    fast: grok-4.20-non-reasoning
+    thinking: grok-4.3
+  anthropic:
+    fast: claude-sonnet-4-6
+    thinking: claude-opus-4-8
+  vertex:
+    fast: gemini-3.5-flash
+    thinking: gemini-3.1-pro-preview
+
+# Which tier each pipeline step uses
+tasks:
+  # Slide pipeline
+  task1: fast        # Genre classification — pattern matching
+  task2: thinking    # Source analysis — deep structural extraction
+  task3: fast        # Structure planning — constrained output
+  task4: thinking    # Content allocation — multi-source reasoning
+  task5: fast        # Visual design — template-guided
+  task6: thinking    # Slide specification — integrates 5 prior outputs
+  task7: fast        # Image prompts — formulaic per-slide
+  # Infographic pipeline
+  i0: thinking       # Content analysis — deep structural extraction
+  i1: thinking       # Design specification — creative layout decisions
+  i2: fast           # Image prompts — formulaic per-variant
+  i2_critique: thinking   # Prompt audit — must catch what i2 missed
+  i2_refine: fast          # Targeted prompt corrections
+  # Shared
+  enrichment: fast   # Prompt enrichment — simple context rewrite
+
+# Per-task output token limits (omit to use model default)
+max_output_tokens:
+  # Slide pipeline
+  task7: 32000        # Image prompts — batch mode for 13+ slides
+  # Infographic pipeline
+  i0: 16000           # Content analysis
+  i2: 16000           # Image prompt generation (multiple variants)
+  i2_critique: 8000   # Prompt audit
+  i2_refine: 16000    # Prompt correction (full TaskI2Output replacement)
+
+# Per-task extended thinking budgets (applies only to providers that support it)
+# Tasks not listed use the default. Fast-tier tasks get no thinking regardless.
+thinking_budget:
+  default: 10240
+  task6: 16384     # Integrates 5 prior outputs

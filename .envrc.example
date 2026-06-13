@@ -1,0 +1,11 @@
+# Copy this file to `.envrc` (gitignored) and fill in your own keys, or export
+# these variables however you manage secrets. Only the providers you actually
+# use need a key.
+#
+# Text generation: Gemini, OpenAI, xAI, and Anthropic are supported with a
+# fallback chain. Image generation: Gemini and OpenAI (xAI / Vertex optional).
+
+export GOOGLE_API_KEY=...      # Gemini (text + image)
+export OPENAI_API_KEY=...      # OpenAI (text + gpt-image-2)
+export XAI_API_KEY=...         # xAI / Grok (optional)
+export ANTHROPIC_API_KEY=...   # Anthropic Claude (optional, text fallback)

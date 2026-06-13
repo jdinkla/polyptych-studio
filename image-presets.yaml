@@ -1,0 +1,33 @@
+# Image-generation presets.
+#
+# Each preset bundles a set of image flags (provider, size, aspect-ratio,
+# quality, output-format, compression, image-model) that are reusable across
+# both image-producing polyptych subcommands (deck, infographic).
+#
+# Usage:
+#   uv run polyptych infographic sources/x.md --output-dir generated/x \
+#       --image-preset openai-low
+#   just gen deck sources/x.md --output-dir generated/x --image-preset gem
+#
+# Resolution order (highest wins):
+#   explicit CLI flag > pipeline preset > image preset > final defaults
+#
+# Valid keys: provider, size, aspect-ratio, quality, output-format, compression, image-model
+#
+# NOTE: Aspect-ratio values are quoted because YAML otherwise parses "16:9"
+# as the sexagesimal number 969.
+
+# --- Gemini -------------------------------------------------------------------
+
+gem:           { provider: "gemini", size: "1K", aspect-ratio: "16:9" }
+gem-2k:        { provider: "gemini", size: "2K", aspect-ratio: "16:9" }   # infographic-grade legibility
+
+# --- OpenAI gpt-image-2 -------------------------------------------------------
+
+openai-low:    { provider: "openai", size: "1536x1024", quality: "low" }
+openai-medium: { provider: "openai", size: "1536x1024", quality: "medium" }
+openai-high:   { provider: "openai", size: "1536x1024", quality: "high" }
+
+# --- xAI ----------------------------------------------------------------------
+
+xai:           { provider: "xai", aspect-ratio: "16:9" }

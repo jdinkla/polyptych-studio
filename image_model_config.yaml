@@ -1,0 +1,10 @@
+# Image generation model configuration.
+# Resolution: --image-model flag > $POLYPTYCH_IMAGE_MODEL env var (deprecated alias $SLIDE_GEN_IMAGE_MODEL) > config below.
+# As of pixbridge 0.2.0 there is no provider built-in default: every provider in use must have an entry here (or an override), else generation raises ValueError.
+
+providers:
+  x_gemini: gemini-3.1-flash-image
+  gemini: gemini-3-pro-image
+  openai: gpt-image-2
+  xai: grok-imagine-image-quality
+  vertex: gemini-3-pro-image
