@@ -29,6 +29,9 @@ infographic: `i0`→`i2`) run first, then image generation.
 > using the `infographic` pipeline and the
 > [`semi-flat-vector`](prompts/style-transfer/infographic/semi-flat-vector.md) style.
 
+For more examples, see the AI-generated part of my homepage:
+[jdinkla.github.io/ai-generated](https://jdinkla.github.io/ai-generated/index.html#experiments).
+
 ## Installation
 
 ```bash
