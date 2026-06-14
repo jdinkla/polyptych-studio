@@ -85,10 +85,24 @@ from .prompt_loader import (
 )
 
 # --- pipeline: the composable slide/infographic base + mixins ---
-from .pipeline_base import SlidePipelineBase
+from .pipeline_base import (
+    IMAGE_GEN_AVAILABLE,
+    PipelineMixin,
+    SlidePipelineBase,
+)
 from .pipeline_infographic import SlidePipelineInfographicMixin
 from .pipeline_task import SlidePipelineTaskMixin
 from .pipeline import SlidePipeline
+
+# --- image_batch: the building blocks for a pipeline's image step ---
+from .image_batch import (
+    BatchItem,
+    BatchResult,
+    BatchSettings,
+    BuiltPrompt,
+    ImageBatchGenerator,
+    ImageFailure,
+)
 
 # --- cli: arg-adders, command handlers, parser + dispatch building blocks ---
 from .cli import (
@@ -162,10 +176,19 @@ __all__ = [
     "read_prompt_by_spec",
     "load_prompt_for",
     # pipeline
+    "IMAGE_GEN_AVAILABLE",
+    "PipelineMixin",
     "SlidePipelineBase",
     "SlidePipelineInfographicMixin",
     "SlidePipelineTaskMixin",
     "SlidePipeline",
+    # image_batch
+    "BatchItem",
+    "BatchResult",
+    "BatchSettings",
+    "BuiltPrompt",
+    "ImageBatchGenerator",
+    "ImageFailure",
     # cli
     "CORE_SUBCOMMAND_TO_PIPELINE",
     "add_advanced_image_args",

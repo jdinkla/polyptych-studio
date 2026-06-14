@@ -297,6 +297,7 @@ def _run_pipeline_command(
     pipeline_kwargs: Callable[[argparse.Namespace], dict[str, Any]] | None = None,
     validate_args: Callable[[argparse.Namespace], str | None] | None = None,
     start_override: Callable[[argparse.Namespace], str | None] | None = None,
+    pipeline_cls: type | None = None,
 ) -> int:
     """Shared driver behind every pipeline subcommand.
 
@@ -314,7 +315,7 @@ def _run_pipeline_command(
         models: Step name → Pydantic model registry.
         make_run_config: The ``from_namespace`` classmethod of the pipeline's
             run-config dataclass.
-        run_method: Name of the ``SlidePipeline`` method that runs the pipeline.
+        run_method: Name of the ``pipeline_cls`` method that runs the pipeline.
         selection: Optional ``(args attribute, from_namespace kwarg, parser)``
             triple for item-selection flags (``--slides``).
         pass_force: Whether this pipeline forwards ``--force`` to
@@ -325,10 +326,19 @@ def _run_pipeline_command(
             check; returns an error message to print (exit 1), or None.
         start_override: Optional ``--from`` override; returns a step name, or
             None to fall through to the default resolution.
+        pipeline_cls: Pipeline class to construct. Defaults to ``SlidePipeline``;
+            extension packages pass their own composed class so ``run_method``
+            can resolve to a mixin the core does not ship.
 
     Returns:
         Exit code (0 for success, 1 for failure).
     """
+    # Resolve at call time (not as a default arg value) so the name lookup honors
+    # any monkeypatch of ``polyptych.cli.SlidePipeline`` and so extensions can
+    # inject their own composed class.
+    if pipeline_cls is None:
+        pipeline_cls = SlidePipeline
+
     source_path = Path(args.source_file)
     if not source_path.exists():
         print(f"Error: Source file not found: {source_path}", file=sys.stderr)
@@ -355,7 +365,7 @@ def _run_pipeline_command(
         )
         image_model_config = load_image_model_config(override=image_model_override)
 
-        pipeline = SlidePipeline(
+        pipeline = pipeline_cls(
             source_path=source_path,
             output_dir=output_dir,
             model_config=model_config,
