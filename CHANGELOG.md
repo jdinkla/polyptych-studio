@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-14
+
 ### Added
 
 - **`polyptych.ext` extension API** — a stable, documented public surface for
@@ -17,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   loaders, the slide/infographic pipeline mixins, and the CLI arg-adders,
   command handlers, and `build_parser`. Re-exports existing internals under
   stable names; no behavior change.
+
+## [0.1.0] - 2026-06-14
 
 First open-source release.
 

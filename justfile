@@ -138,3 +138,10 @@ create-pdf DIR FILENAME="deck.pdf":
 [doc("Show paragraph IDs for a text file")]
 count-paragraphs FILE:
     python3 scripts/count-paragraphs.py {{FILE}}
+
+# --- Release ---
+
+[group('release')]
+[doc("Bump version, build dist, and print the publish command. VERSION = X.Y.Z or major/minor/patch")]
+release VERSION:
+    uv run python scripts/release.py {{VERSION}}
