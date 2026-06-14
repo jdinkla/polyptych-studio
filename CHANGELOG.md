@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-06-14
+### Added
+
+- **`polyptych.ext` extension API** — a stable, documented public surface for
+  building additional pipelines on top of the core without forking: registry
+  builders (`build_output_files`/`build_models`/`build_step_deps`), the core
+  task-spec list (`CORE_TASK_SPECS`) and `task_spec`/`TaskSpec` primitives, the
+  `PipelineRunConfig` base and option mixins, the preset lookup tables, prompt
+  loaders, the slide/infographic pipeline mixins, and the CLI arg-adders,
+  command handlers, and `build_parser`. Re-exports existing internals under
+  stable names; no behavior change.
 
 First open-source release.
 
