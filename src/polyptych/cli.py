@@ -166,6 +166,27 @@ def _add_preset_flags(parser: argparse.ArgumentParser) -> None:
 
 
 # Map CLI subcommand → internal pipeline name used in presets and run_config.
+# Extension-registered pipelines for `validate`: (name, steps, output_files,
+# models). Populated by ``register_validation_pipeline`` at extension import.
+_EXTRA_VALIDATION_PIPELINES: list[
+    tuple[str, list[str], dict[str, str], dict[str, type]]
+] = []
+
+
+def register_validation_pipeline(
+    name: str,
+    steps: list[str],
+    output_files: dict[str, str],
+    models: dict[str, type],
+) -> None:
+    """Register an extension pipeline so ``validate`` discovers its outputs.
+
+    ``steps``/``output_files``/``models`` mirror the per-pipeline tables in
+    ``pipeline_config``. Call once at extension import time.
+    """
+    _EXTRA_VALIDATION_PIPELINES.append((name, steps, output_files, models))
+
+
 _SUBCOMMAND_TO_PIPELINE: dict[str, str] = {
     "deck": "slide",
     "infographic": "infographic",
@@ -457,7 +478,9 @@ def validate_command(args: argparse.Namespace) -> int:
         print(f"Error: Directory not found: {output_dir}", file=sys.stderr)
         return 1
 
-    # All pipeline registries: (pipeline_name, steps, output_files, models)
+    # All pipeline registries: (pipeline_name, steps, output_files, models).
+    # Extension packages contribute their pipelines via
+    # ``register_validation_pipeline`` so ``validate`` covers them too.
     PIPELINES = [
         ("slide", ALL_STEPS, TASK_OUTPUT_FILES, TASK_MODELS),
         (
@@ -466,6 +489,7 @@ def validate_command(args: argparse.Namespace) -> int:
             INFOGRAPHIC_OUTPUT_FILES,
             INFOGRAPHIC_MODELS,
         ),
+        *_EXTRA_VALIDATION_PIPELINES,
     ]
 
     # Build unified lookup: task_name → (pipeline, filename, model_class)
@@ -689,16 +713,30 @@ def clean_source_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(
+    *,
+    prog: str = "polyptych",
+    description: str = (
+        "Turn a source text into visual media: slide decks and single-page infographics"
+    ),
+    register_extra: Callable[[Any], None] | None = None,
+) -> argparse.ArgumentParser:
     """Build the top-level argument parser with all subcommands.
 
     Exposed separately from :func:`main` so tests can exercise the real
     argparse defaults together with preset resolution
     (:func:`presets.apply_presets`).
+
+    Args:
+        prog: Program name shown in usage (overridable by extension CLIs).
+        description: Top-level help description.
+        register_extra: Optional callback given the ``_SubParsersAction`` after
+            the core subcommands are added, so an extension CLI can register its
+            own subcommands on the same parser.
     """
     parser = argparse.ArgumentParser(
-        prog="polyptych",
-        description="Turn a source text into visual media: slide decks and single-page infographics",
+        prog=prog,
+        description=description,
     )
     parser.add_argument(
         "--log-level",
@@ -962,6 +1000,9 @@ def build_parser() -> argparse.ArgumentParser:
     clean_parser.add_argument(
         "--dry-run", action="store_true", help="Print report without writing"
     )
+
+    if register_extra is not None:
+        register_extra(subparsers)
 
     return parser
 

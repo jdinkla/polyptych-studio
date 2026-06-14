@@ -125,6 +125,7 @@ from .cli import (
     infographic_command,
     parse_scene_selection,
     parse_slide_selection,
+    register_validation_pipeline,
     resolve_from_step,
     validate_command,
 )
@@ -213,6 +214,7 @@ __all__ = [
     "infographic_command",
     "parse_scene_selection",
     "parse_slide_selection",
+    "register_validation_pipeline",
     "resolve_from_step",
     "validate_command",
 ]
