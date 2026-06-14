@@ -24,6 +24,7 @@ Technical descriptions of the system's machinery.
 - [CLI Reference](reference/cli-reference.md) — commands, flags, env vars, pipeline task tables, just targets
 - [TextClient API](reference/text-client-api.md) — multi-provider text generation API
 - [Pipeline Tier Optimization](reference/pipeline-tier-optimization.md) — fast vs. thinking tier assignments per task
+- [Image Prompting Guide](reference/image-prompting-guide.md) — provider prompting techniques for image generation
 
 ## Explanation
 

@@ -10,14 +10,6 @@ __pycache__/
 *.so
 .Python
 
-# Web (Vite/React frontend)
-node_modules/
-web/node_modules/
-web/test-results/
-web/coverage/
-web/tsconfig.tsbuildinfo
-.vite/
-
 build/
 develop-eggs/
 dist/

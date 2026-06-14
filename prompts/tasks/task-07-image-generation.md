@@ -875,7 +875,7 @@ image_prompt:
 
     TEXT ELEMENTS:
     - Headline: "A Visitor with Questions" in large serif bold with drop shadow, lower third, left-aligned
-    - Footer: "www.dinkla.net" in small muted text, bottom-right corner
+    - Footer: "example.com" in small muted text, bottom-right corner
 
     STYLE: Per --style transfer guidelines. If no style transfer provided: cinematic photography with dramatic noir lighting, high contrast, desaturated with selective warm tones.
 

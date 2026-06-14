@@ -1,4 +1,4 @@
-"""JSONL logging for API usage (LLM, image generation, TTS, transcription)."""
+"""JSONL logging for API usage (LLM, image generation)."""
 
 import json
 import threading

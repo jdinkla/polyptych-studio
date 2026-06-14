@@ -16,7 +16,9 @@ This tutorial walks you through running your first pipeline, examining the outpu
    export GOOGLE_API_KEY="your-gemini-api-key"
    ```
 
-3. **Have a source essay** — any markdown file works. The project includes sample essays in `sources/` if you have them, or create a short one:
+3. **Have a source essay** — any markdown file works. An example ships at
+   `examples/scene.md` (a short noir scene, good for the slide pipeline's
+   fiction path); or create your own:
 
    ```bash
    cat > /tmp/sample-essay.md << 'EOF'

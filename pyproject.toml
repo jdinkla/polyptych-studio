@@ -27,7 +27,7 @@ packages = ["src/common", "src/polyptych"]
 
 [tool.pytest.ini_options]
 markers = [
-    "integration: tests that call real external APIs (LLM, TTS, image generation)",
+    "integration: tests that call real external APIs (LLM, image generation)",
 ]
 
 [tool.ruff]
