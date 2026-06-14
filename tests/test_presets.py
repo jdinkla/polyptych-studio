@@ -17,8 +17,8 @@ from polyptych.cli import build_parser
 
 
 def _redirect_repo_root(monkeypatch: pytest.MonkeyPatch, root: Path) -> None:
-    """Point _find_repo_root() at a tmp directory for the duration of a test."""
-    monkeypatch.setattr(presets, "_find_repo_root", lambda: root)
+    """Point preset data resolution at a tmp directory for the test."""
+    monkeypatch.setattr(presets, "data_path", lambda *parts: root.joinpath(*parts))
 
 
 def _write_yaml(path: Path, data: dict[str, Any]) -> None:

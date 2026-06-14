@@ -20,6 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   command handlers, and `build_parser`. Re-exports existing internals under
   stable names; no behavior change.
 
+### Fixed
+
+- **Packaged data is now bundled into the wheel.** The config YAMLs
+  (`model_config.yaml`, `image_model_config.yaml`, `image-presets.yaml`,
+  `pipeline-presets.yaml`) and the `prompts/` tree are force-included under
+  `polyptych/_data/`, and the loaders resolve them via
+  `polyptych._datafiles.data_root` (bundled dir for wheel installs, repo root
+  for editable/source checkouts). A plain `pip install polyptych` previously
+  failed at runtime with `model_config.yaml not found` / `Prompts directory not
+  found` because the wheel shipped only `.py` modules.
+
 ## [0.1.0] - 2026-06-14
 
 First open-source release.

@@ -60,6 +60,17 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/common", "src/polyptych"]
 
+[tool.hatch.build.targets.wheel.force-include]
+# Bundle the repo-root runtime data into the wheel under polyptych/_data/ so a
+# pip-installed package can find its config YAMLs and prompt templates (they
+# live at the repo root in source form; _datafiles.data_root() resolves the
+# bundled copy for wheels and falls back to the repo root for editable installs).
+"prompts" = "polyptych/_data/prompts"
+"model_config.yaml" = "polyptych/_data/model_config.yaml"
+"image_model_config.yaml" = "polyptych/_data/image_model_config.yaml"
+"image-presets.yaml" = "polyptych/_data/image-presets.yaml"
+"pipeline-presets.yaml" = "polyptych/_data/pipeline-presets.yaml"
+
 [tool.hatch.build.targets.sdist]
 # Ship only what's needed to install, run, and rebuild/test the package.
 # `generated/` is already absent (gitignored); this drops dev-only and heavy

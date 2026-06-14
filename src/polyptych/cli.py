@@ -9,6 +9,7 @@ from typing import Any
 
 from common.compat import getenv_compat
 from . import presets
+from ._datafiles import data_path
 from .logging_setup import configure_logging
 from .model_config import load_image_model_config, load_model_config
 from .pipeline import (
@@ -911,7 +912,9 @@ def build_parser(
     info_parser.add_argument(
         "--style",
         type=str,
-        default="prompts/style-transfer/infographic/semi-flat-vector.md",
+        default=str(
+            data_path("prompts", "style-transfer", "infographic", "semi-flat-vector.md")
+        ),
         help="Path to a style transfer prompt file (markdown) to customize visual style (default: semi-flat-vector)",
     )
     info_parser.add_argument(

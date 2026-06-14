@@ -36,6 +36,8 @@ from typing import Any
 
 import yaml
 
+from ._datafiles import data_path
+
 
 # Flag names whose argparse dest differs from a simple hyphen→underscore swap.
 _FLAG_TO_DEST: dict[str, str] = {
@@ -130,17 +132,6 @@ _PIPELINE_FINAL_DEFAULTS: dict[str, dict[str, Any]] = {
 # ---- YAML loading -----------------------------------------------------------
 
 
-def _find_repo_root() -> Path:
-    """Walk up from this module until a sibling ``pyproject.toml`` is found."""
-    here = Path(__file__).resolve().parent
-    while here != here.parent:
-        if (here / "pyproject.toml").exists():
-            return here
-        here = here.parent
-    # Fallback: assume <repo>/src/polyptych/ layout
-    return Path(__file__).resolve().parent.parent.parent
-
-
 # Extra directories (extension repos) searched for preset YAML files, merged
 # over the core repo's. See :func:`register_preset_dir`.
 _EXTRA_PRESET_DIRS: list[Path] = []
@@ -172,7 +163,7 @@ def _load_yaml(filename: str) -> dict[str, Any]:
     merged, and for nested dict values (a pipeline's preset map) the inner
     entries are merged too, with registered dirs taking precedence.
     """
-    merged = _read_yaml_file(_find_repo_root() / filename)
+    merged = _read_yaml_file(data_path(filename))
     for d in _EXTRA_PRESET_DIRS:
         for key, value in _read_yaml_file(d / filename).items():
             if isinstance(value, dict) and isinstance(merged.get(key), dict):

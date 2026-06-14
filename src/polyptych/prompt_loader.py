@@ -7,6 +7,7 @@ in ``tasks/`` modules.
 
 from pathlib import Path
 
+from ._datafiles import data_path
 from .task_registry import (
     TASKS,
     Pipeline,
@@ -17,11 +18,8 @@ from .task_registry import (
 
 
 def get_prompts_dir() -> Path:
-    """Return the path to ``prompts/tasks/`` at the repo root."""
-    current_file = Path(__file__)
-    # src/polyptych/prompt_loader.py -> project root is two parents up
-    project_root = current_file.parent.parent.parent
-    prompts_dir = project_root / "prompts" / "tasks"
+    """Return the path to the packaged ``prompts/tasks/`` directory."""
+    prompts_dir = data_path("prompts", "tasks")
 
     if not prompts_dir.exists():
         raise FileNotFoundError(f"Prompts directory not found: {prompts_dir}")
@@ -152,10 +150,8 @@ def load_infographic_task_prompt(task_name: str) -> str:
 
 
 def get_providers_dir() -> Path:
-    """Return the path to ``prompts/providers/`` at the repo root."""
-    current_file = Path(__file__)
-    project_root = current_file.parent.parent.parent
-    return project_root / "prompts" / "providers"
+    """Return the path to the packaged ``prompts/providers/`` directory."""
+    return data_path("prompts", "providers")
 
 
 def load_provider_guidelines(provider: str) -> str | None:

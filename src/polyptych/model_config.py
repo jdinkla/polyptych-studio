@@ -1,9 +1,10 @@
 """Per-task model selection via config YAML."""
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
 import yaml
+
+from ._datafiles import data_path
 
 
 @dataclass
@@ -17,10 +18,10 @@ class ModelConfig:
 
 
 def load_model_config(override: str | None = None) -> ModelConfig:
-    """Load model_config.yaml from the repository root.
+    """Load model_config.yaml from the packaged data dir (or repo root).
 
-    Walks up from this module's directory until it finds model_config.yaml,
-    which lives at the top level of the repository.
+    See :func:`polyptych._datafiles.data_root` for how the location is
+    resolved for wheel vs. editable installs.
 
     Args:
         override: If set (from --model or $POLYPTYCH_MODEL; deprecated alias
@@ -30,16 +31,9 @@ def load_model_config(override: str | None = None) -> ModelConfig:
     Returns:
         ModelConfig with providers and tasks populated.
     """
-    # Walk up from src/polyptych/ to find the repo root
-    config_path = Path(__file__).resolve().parent
-    while config_path != config_path.parent:
-        candidate = config_path / "model_config.yaml"
-        if candidate.exists():
-            config_path = candidate
-            break
-        config_path = config_path.parent
-    else:
-        raise FileNotFoundError("model_config.yaml not found in any parent directory")
+    config_path = data_path("model_config.yaml")
+    if not config_path.exists():
+        raise FileNotFoundError(f"model_config.yaml not found at {config_path}")
     with open(config_path) as f:
         raw = yaml.safe_load(f)
 
@@ -104,11 +98,11 @@ class ImageModelConfig:
 
 
 def load_image_model_config(override: str | None = None) -> ImageModelConfig:
-    """Load image_model_config.yaml from the repository root.
+    """Load image_model_config.yaml from the packaged data dir (or repo root).
 
-    Walks up from this module's directory until it finds the config file.
     Returns an empty config if the file is not found (safe fallback to
-    provider built-in defaults).
+    provider built-in defaults). See
+    :func:`polyptych._datafiles.data_root` for path resolution.
 
     Args:
         override: If set (from --image-model or $POLYPTYCH_IMAGE_MODEL;
@@ -118,14 +112,8 @@ def load_image_model_config(override: str | None = None) -> ImageModelConfig:
     Returns:
         ImageModelConfig with providers populated.
     """
-    config_path = Path(__file__).resolve().parent
-    while config_path != config_path.parent:
-        candidate = config_path / "image_model_config.yaml"
-        if candidate.exists():
-            config_path = candidate
-            break
-        config_path = config_path.parent
-    else:
+    config_path = data_path("image_model_config.yaml")
+    if not config_path.exists():
         return ImageModelConfig()
 
     with open(config_path) as f:
