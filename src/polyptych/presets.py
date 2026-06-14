@@ -309,3 +309,25 @@ def fill_pipeline_defaults(args: argparse.Namespace, pipeline: str) -> None:
     for dest, value in defaults.items():
         if getattr(args, dest, None) is None:
             setattr(args, dest, value)
+
+
+def register_pipeline_presets(
+    pipeline: str,
+    *,
+    preset_keys: frozenset[str] | None = None,
+    image_defaults: dict[str, Any] | None = None,
+    pipeline_defaults: dict[str, Any] | None = None,
+) -> None:
+    """Register an extension pipeline's preset tables into the core lookups.
+
+    Lets a downstream package add its own pipelines so ``apply_presets`` and
+    ``fill_*_defaults`` resolve named presets and final defaults for them
+    exactly as they do for the built-in pipelines. Call once at import time.
+    Overwrites any existing entry for ``pipeline``.
+    """
+    if preset_keys is not None:
+        _PIPELINE_PRESET_KEYS[pipeline] = preset_keys
+    if image_defaults is not None:
+        _IMAGE_FINAL_DEFAULTS[pipeline] = image_defaults
+    if pipeline_defaults is not None:
+        _PIPELINE_FINAL_DEFAULTS[pipeline] = pipeline_defaults

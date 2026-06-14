@@ -73,6 +73,7 @@ from .presets import (
     fill_pipeline_defaults,
     load_image_preset,
     load_pipeline_preset,
+    register_pipeline_presets,
 )
 
 # --- prompt_loader: per-pipeline prompt resolution primitives ---
@@ -82,6 +83,7 @@ from .prompt_loader import (
     _pipeline_prompt_map as pipeline_prompt_map,
     _read_prompt_by_spec as read_prompt_by_spec,
     load_prompt_for,
+    load_provider_guidelines,
 )
 
 # --- pipeline: the composable slide/infographic base + mixins ---
@@ -169,12 +171,14 @@ __all__ = [
     "fill_pipeline_defaults",
     "load_image_preset",
     "load_pipeline_preset",
+    "register_pipeline_presets",
     # prompt_loader
     "get_prompts_dir",
     "load_by_pipeline",
     "pipeline_prompt_map",
     "read_prompt_by_spec",
     "load_prompt_for",
+    "load_provider_guidelines",
     # pipeline
     "IMAGE_GEN_AVAILABLE",
     "PipelineMixin",
