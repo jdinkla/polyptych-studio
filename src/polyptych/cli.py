@@ -199,6 +199,15 @@ _OPENAI_DEFAULT_QUALITY = {
 }
 
 
+def register_image_quality_default(pipeline: str, quality: str) -> None:
+    """Register the default OpenAI ``--quality`` for an extension pipeline.
+
+    Consulted by :func:`_resolve_image_quality` when neither an explicit
+    ``--quality`` nor a non-OpenAI provider applies. Call once at import time.
+    """
+    _OPENAI_DEFAULT_QUALITY[pipeline] = quality
+
+
 def _resolve_image_quality(args: argparse.Namespace, pipeline_name: str) -> str | None:
     """Resolve --quality with per-pipeline OpenAI defaults.
 
