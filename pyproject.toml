@@ -2,8 +2,37 @@
 name = "polyptych"
 version = "0.1.0"
 description = "Turn a source text into visual media — slide decks and single-page infographics, with multi-provider text and image generation"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+    { name = "Jörn Dinkla", email = "joern@dinkla.net" },
+]
+keywords = [
+    "slides",
+    "infographic",
+    "presentation",
+    "image-generation",
+    "text-generation",
+    "ai",
+    "llm",
+    "gemini",
+    "openai",
+    "anthropic",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Markup",
+]
 dependencies = [
     "google-genai>=1.0,<2",
     "pyyaml>=6.0,<7",
@@ -14,6 +43,12 @@ dependencies = [
     "anthropic>=0.40,<1",
     "pixbridge>=0.2.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/jdinkla/polyptych-studio"
+Repository = "https://github.com/jdinkla/polyptych-studio"
+Issues = "https://github.com/jdinkla/polyptych-studio/issues"
+Changelog = "https://github.com/jdinkla/polyptych-studio/blob/main/CHANGELOG.md"
 
 [project.scripts]
 polyptych = "polyptych.cli:main"
