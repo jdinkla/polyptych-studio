@@ -29,29 +29,62 @@ def get_prompts_dir() -> Path:
     return prompts_dir
 
 
+# Additional ``prompts/tasks/`` directories registered by extension packages.
+# Searched after the core directory so a downstream package's task prompts
+# (which live in its own repo) resolve through the same loaders as the
+# built-in ones. See :func:`register_prompts_dir`.
+_EXTRA_PROMPT_DIRS: list[Path] = []
+
+
+def register_prompts_dir(path: Path | str) -> None:
+    """Register an extra ``prompts/tasks/`` directory for prompt resolution.
+
+    Lets an extension package add the directory holding its own task prompts so
+    ``load_prompt_for`` / ``_read_prompt_by_spec`` find them alongside the core
+    prompts. Call once at import time. Idempotent; missing dirs raise.
+    """
+    p = Path(path)
+    if not p.exists():
+        raise FileNotFoundError(f"Prompts directory not found: {p}")
+    if p not in _EXTRA_PROMPT_DIRS:
+        _EXTRA_PROMPT_DIRS.append(p)
+
+
+def _prompt_search_dirs() -> list[Path]:
+    """Core prompts dir first, then any extension-registered dirs."""
+    return [get_prompts_dir(), *_EXTRA_PROMPT_DIRS]
+
+
 def _read_prompt_by_spec(
     spec: TaskSpec,
     *,
     subtype: str | None = None,
     genre: str | None = None,
 ) -> str:
-    """Resolve ``spec`` to a file under ``prompts/tasks/`` and return its text.
+    """Resolve ``spec`` to a file under a ``prompts/tasks/`` dir and return its text.
 
-    For genre-supporting tasks the genre-specific variant is tried first and
-    the base filename is used as a fallback.
+    Searches the core prompts directory first, then any directories registered
+    by extension packages (:func:`register_prompts_dir`). For genre-supporting
+    tasks the genre-specific variant is tried first and the base filename is
+    used as a fallback.
     """
-    prompts_dir = get_prompts_dir()
+    search_dirs = _prompt_search_dirs()
 
     if spec.supports_genre and genre is not None:
-        variant = prompts_dir / spec.resolve_prompt_filename(genre=genre)
-        if variant.exists():
-            return variant.read_text()
+        genre_name = spec.resolve_prompt_filename(genre=genre)
+        for d in search_dirs:
+            variant = d / genre_name
+            if variant.exists():
+                return variant.read_text()
 
     filename = spec.resolve_prompt_filename(subtype=subtype)
-    prompt_file = prompts_dir / filename
-    if not prompt_file.exists():
-        raise FileNotFoundError(f"Prompt file not found: {prompt_file}")
-    return prompt_file.read_text()
+    for d in search_dirs:
+        prompt_file = d / filename
+        if prompt_file.exists():
+            return prompt_file.read_text()
+
+    tried = ", ".join(str(d / filename) for d in search_dirs)
+    raise FileNotFoundError(f"Prompt file not found: {filename} (searched: {tried})")
 
 
 def load_prompt_for(

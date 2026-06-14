@@ -215,3 +215,19 @@ def get_task(name: str) -> TaskSpec:
 def tasks_for_pipeline(pipeline: Pipeline) -> list[TaskSpec]:
     """Return every ``TaskSpec`` whose pipeline matches ``pipeline``, in registry order."""
     return [spec for spec in _TASK_LIST if spec.pipeline == pipeline]
+
+
+def register_tasks(specs: list[TaskSpec]) -> None:
+    """Add extension-pipeline task specs to the registry.
+
+    Appends to the ordered task list and the by-name lookup so a downstream
+    package's tasks become first-class everywhere the registry is consulted —
+    the step-map builders in ``pipeline_config``, prompt resolution via
+    ``get_task``, and validation. Call once at import time. Raises ``ValueError``
+    on a duplicate task name so two pipelines can't silently shadow each other.
+    """
+    for spec in specs:
+        if spec.name in TASKS:
+            raise ValueError(f"Task '{spec.name}' is already registered")
+        _TASK_LIST.append(spec)
+        TASKS[spec.name] = spec

@@ -47,6 +47,7 @@ from .task_registry import (
     _TASK_LIST as CORE_TASK_SPECS,
     _spec as task_spec,
     get_task,
+    register_tasks,
     tasks_for_pipeline,
 )
 
@@ -84,6 +85,7 @@ from .prompt_loader import (
     _read_prompt_by_spec as read_prompt_by_spec,
     load_prompt_for,
     load_provider_guidelines,
+    register_prompts_dir,
 )
 
 # --- pipeline: the composable slide/infographic base + mixins ---
@@ -151,6 +153,7 @@ __all__ = [
     "CORE_TASK_SPECS",
     "task_spec",
     "get_task",
+    "register_tasks",
     "tasks_for_pipeline",
     # run_config
     "InfographicRunConfig",
@@ -179,6 +182,7 @@ __all__ = [
     "read_prompt_by_spec",
     "load_prompt_for",
     "load_provider_guidelines",
+    "register_prompts_dir",
     # pipeline
     "IMAGE_GEN_AVAILABLE",
     "PipelineMixin",
