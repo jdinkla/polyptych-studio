@@ -141,12 +141,45 @@ def _find_repo_root() -> Path:
     return Path(__file__).resolve().parent.parent.parent
 
 
-def _load_yaml(filename: str) -> dict[str, Any]:
-    path = _find_repo_root() / filename
+# Extra directories (extension repos) searched for preset YAML files, merged
+# over the core repo's. See :func:`register_preset_dir`.
+_EXTRA_PRESET_DIRS: list[Path] = []
+
+
+def register_preset_dir(path: Path | str) -> None:
+    """Register a directory holding extra preset YAML files.
+
+    An extension repo registers its root so its ``image-presets.yaml`` /
+    ``pipeline-presets.yaml`` entries merge over the core's (extension wins on
+    a key clash). Call once at import time.
+    """
+    p = Path(path)
+    if p not in _EXTRA_PRESET_DIRS:
+        _EXTRA_PRESET_DIRS.append(p)
+
+
+def _read_yaml_file(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     with open(path) as f:
         return yaml.safe_load(f) or {}
+
+
+def _load_yaml(filename: str) -> dict[str, Any]:
+    """Load a preset YAML, merging the core repo's with any registered dirs.
+
+    Two-level merge: top-level keys (preset names, or pipeline namespaces) are
+    merged, and for nested dict values (a pipeline's preset map) the inner
+    entries are merged too, with registered dirs taking precedence.
+    """
+    merged = _read_yaml_file(_find_repo_root() / filename)
+    for d in _EXTRA_PRESET_DIRS:
+        for key, value in _read_yaml_file(d / filename).items():
+            if isinstance(value, dict) and isinstance(merged.get(key), dict):
+                merged[key] = {**merged[key], **value}
+            else:
+                merged[key] = value
+    return merged
 
 
 def _suggest(name: str, candidates: list[str]) -> str:

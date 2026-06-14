@@ -75,6 +75,7 @@ from .presets import (
     load_image_preset,
     load_pipeline_preset,
     register_pipeline_presets,
+    register_preset_dir,
 )
 
 # --- prompt_loader: per-pipeline prompt resolution primitives ---
@@ -176,6 +177,7 @@ __all__ = [
     "load_image_preset",
     "load_pipeline_preset",
     "register_pipeline_presets",
+    "register_preset_dir",
     # prompt_loader
     "get_prompts_dir",
     "load_by_pipeline",
