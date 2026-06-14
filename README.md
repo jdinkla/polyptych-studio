@@ -34,6 +34,15 @@ For more examples, see the AI-generated part of my homepage:
 
 ## Installation
 
+Install the published package (the distribution and import name is `polyptych`;
+this repository is `polyptych-studio`):
+
+```bash
+pip install polyptych        # or: uv add polyptych
+```
+
+Or work from a clone of this repo:
+
 ```bash
 uv sync
 ```
