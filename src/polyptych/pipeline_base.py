@@ -136,8 +136,13 @@ class SlidePipelineBase:
         (self.output_dir / "prompts").mkdir(exist_ok=True)
         (self.output_dir / "images").mkdir(exist_ok=True)
 
-        # Copy source material into output directory
-        shutil.copy2(self.source_path, self.output_dir / "source.md")
+        # Copy source material into output directory. Skip when the source is
+        # already the in-dir copy (e.g. a resume run that passes
+        # <output_dir>/source.md, the path the first run wrote); copying a file
+        # onto itself raises shutil.SameFileError.
+        source_copy = self.output_dir / "source.md"
+        if self.source_path.resolve() != source_copy.resolve():
+            shutil.copy2(self.source_path, source_copy)
 
     def _model_for(self, task_name: str) -> str:
         """Resolve the concrete model string for a pipeline step."""
