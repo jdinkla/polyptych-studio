@@ -30,6 +30,49 @@ def _build_pipeline(
     )
 
 
+class TestSourceCopy:
+    def test_resume_with_in_dir_source_does_not_raise(
+        self, tmp_path, source_text, test_model_config
+    ):
+        """Resuming a run by pointing source_path at the output dir's own
+        source.md must not crash. The first run writes <output_dir>/source.md,
+        so a natural resume command passes that exact path back in; copying it
+        onto itself used to raise shutil.SameFileError before any work ran."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir(parents=True)
+        in_dir_source = output_dir / "source.md"
+        in_dir_source.write_text(source_text)
+
+        pipeline = SlidePipeline(
+            source_path=in_dir_source,
+            output_dir=output_dir,
+            model_config=test_model_config,
+            text_provider="gemini",
+            text_fallback=["none"],
+        )
+
+        # The self-copy is skipped, not attempted: the in-dir source survives
+        # untouched and the pipeline still loaded it.
+        assert (output_dir / "source.md").read_text() == source_text
+        assert pipeline.source_essay == source_text
+
+    def test_fresh_run_copies_source_into_output_dir(
+        self, tmp_path, source_text, test_model_config
+    ):
+        """A normal run (source outside the output dir) still copies source.md
+        into the output directory."""
+        source_file = tmp_path / "essay.md"
+        source_file.write_text(source_text)
+        pipeline = SlidePipeline(
+            source_path=source_file,
+            output_dir=tmp_path / "output",
+            model_config=test_model_config,
+            text_provider="gemini",
+            text_fallback=["none"],
+        )
+        assert (pipeline.output_dir / "source.md").read_text() == source_text
+
+
 class TestSaveYamlAtomic:
     def test_save_writes_file_and_leaves_no_temp(
         self, tmp_path, source_text, test_model_config

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Resuming a run no longer crashes when `source_file` is the output dir's own
+  `source.md`.** `PipelineBase.__init__` copied the source into the output
+  directory unconditionally, so a resume command that passed
+  `<output_dir>/source.md` (the path the first run wrote) raised
+  `shutil.SameFileError` before any work ran. The copy is now skipped when the
+  source and destination resolve to the same file.
+
 ## [0.2.0] - 2026-06-14
 
 ### Added
