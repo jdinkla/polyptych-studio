@@ -208,10 +208,10 @@ class ImageBatchGenerator:
                     f"{item.index}: {error_msg}"
                 )
                 logger.warning(
-                    "Failed to generate image for %s %s",
+                    "Failed to generate image for %s %s: %s",
                     self.label,
                     item.index,
-                    exc_info=True,
+                    error_msg,
                 )
         return result
 

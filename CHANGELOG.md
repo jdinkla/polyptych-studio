@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-20
+
 ### Fixed
 
+- **Image-generation failures no longer print a stack trace.** A failed
+  per-image request (e.g. an OpenAI output-moderation block) already logs a
+  one-line warning carrying the error; the redundant `exc_info=True` traceback
+  on the `polyptych.image_batch` logger has been dropped and the error message
+  folded into that warning, so the log stays a clean one-liner.
 - **Resuming a run no longer crashes when `source_file` is the output dir's own
   `source.md`.** `PipelineBase.__init__` copied the source into the output
   directory unconditionally, so a resume command that passed
