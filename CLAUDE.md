@@ -72,7 +72,7 @@ image-generation flag set:
 
 - `--image-preset NAME` — apply a named bundle from `image-presets.yaml`
   (provider/size/aspect-ratio/quality). Available: `gem`, `gem-2k`,
-  `openai-low`, `openai-medium`, `openai-high`, `xai`
+  `gem-lite`, `openai-low`, `openai-medium`, `openai-high`, `xai`
 - `--pipeline-preset NAME` — apply a named bundle from
   `pipeline-presets.yaml[<pipeline>]` (concurrency + pipeline-specific flags).
   Examples: `slide/fast`, `infographic/critique`

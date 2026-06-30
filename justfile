@@ -6,7 +6,7 @@
 #       --style prompts/style-transfer/infographic/semi-flat-vector.md \
 #       --image-preset openai-low
 #
-# Available image presets:    gem, gem-2k, openai-low, openai-medium,
+# Available image presets:    gem, gem-2k, gem-lite, openai-low, openai-medium,
 #                             openai-high, xai
 # Available pipeline presets: see pipeline-presets.yaml
 

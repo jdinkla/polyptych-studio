@@ -1,6 +1,6 @@
 [project]
 name = "polyptych"
-version = "0.2.1"
+version = "0.3.0"
 description = "Turn a source text into visual media — slide decks and single-page infographics, with multi-provider text and image generation"
 readme = "README.md"
 requires-python = ">=3.11"

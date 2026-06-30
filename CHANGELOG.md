@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-30
+
+### Added
+
+- **`gem-lite` image preset** — an opt-in bundle targeting Google's Nano Banana 2
+  Lite (`gemini-3.1-flash-lite-image`), the cheapest/fastest member of the Nano
+  Banana 2 family. Resolves to `provider: gemini`, `size: 1K`, `aspect-ratio:
+  16:9` with the Lite model id carried as an `image-model` override, so it works
+  without touching `image_model_config.yaml` or the provider defaults. Pinned to
+  1K because Lite is 1K-only. Use it via `--image-preset gem-lite` when cheap,
+  high-volume image generation is needed; all defaults are unchanged.
+
 ## [0.2.1] - 2026-06-20
 
 ### Fixed

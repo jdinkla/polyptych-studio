@@ -37,7 +37,7 @@ Both image-producing subcommands (`deck`, `infographic`) accept the same image f
 
 #### Presets (recommended)
 
-- `--image-preset NAME` — apply a named bundle from `image-presets.yaml` at the repo root (provider/size/aspect-ratio/quality, reusable across both pipelines). Bundled presets: `gem`, `gem-2k`, `openai-low`, `openai-medium`, `openai-high`, `xai`. Unknown names get a "did you mean" suggestion.
+- `--image-preset NAME` — apply a named bundle from `image-presets.yaml` at the repo root (provider/size/aspect-ratio/quality, reusable across both pipelines). Bundled presets: `gem`, `gem-2k`, `gem-lite`, `openai-low`, `openai-medium`, `openai-high`, `xai`. Unknown names get a "did you mean" suggestion.
 - `--pipeline-preset NAME` — apply a named bundle from `pipeline-presets.yaml[<pipeline>]` (concurrency + pipeline-specific behavior, scoped per pipeline). Examples: `slide/fast` (concurrent image generation), `infographic/critique` (enable the i2 critique loop). See the YAML for the full list.
 
 **Resolution order** (highest wins): explicit CLI flag > `--pipeline-preset` > `--image-preset` > per-pipeline default > built-in. Non-boolean preset values apply whenever the user did not pass the flag explicitly. Boolean preset values are additive only — they can enable a flag, never disable one the user passed.
