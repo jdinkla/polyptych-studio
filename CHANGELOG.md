@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-07-01
+
 ### Fixed
 
 - **`generation_notes.negative_prompts` now reaches the image providers.** No
