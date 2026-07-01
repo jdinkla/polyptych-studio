@@ -40,6 +40,31 @@ def number_paragraphs(source_text: str) -> str:
     return "\n\n".join(numbered_blocks)
 
 
+def fold_negatives_into_prompt(
+    full_prompt: str, negative_prompts: list[str] | None
+) -> str:
+    """Fold ``generation_notes.negative_prompts`` into the prompt text.
+
+    No pixbridge provider reads the ``negative_prompts`` field — providers send
+    only ``full_prompt`` — so negatives are inert metadata unless they are
+    folded into the prompt text itself. This appends them as a single
+    ``AVOID: ...`` line, the mechanism shared with the downstream extension
+    pipelines.
+
+    Idempotent: if the rendered AVOID line is already present (e.g. a
+    critique-refine pass re-processing an already-folded prompt), the prompt
+    is returned unchanged. Blank entries are dropped; ``None``/empty lists
+    leave the prompt untouched.
+    """
+    negatives = [n.strip() for n in (negative_prompts or []) if n and n.strip()]
+    if not negatives:
+        return full_prompt
+    avoid_line = "AVOID: " + ", ".join(negatives) + "."
+    if avoid_line in full_prompt:
+        return full_prompt
+    return f"{full_prompt}\n\n{avoid_line}"
+
+
 def extract_avoid_rules(style_prompt: str) -> list[str]:
     """Parse the **Avoid** section from a style preset markdown string.
 

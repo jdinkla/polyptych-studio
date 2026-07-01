@@ -3,6 +3,22 @@
 from ..client import TextClient
 from ..models import TaskI0Output, TaskI1Output, TaskI2Output
 from ..prompt_loader import load_infographic_task_prompt, load_provider_guidelines
+from ..text_utils import fold_negatives_into_prompt
+
+
+def fold_variant_negatives(output: TaskI2Output) -> TaskI2Output:
+    """Fold each variant's ``negative_prompts`` into its ``full_prompt``.
+
+    The i2 ``full_prompt`` is LLM-authored, so the fold happens
+    deterministically in code after the call returns rather than trusting the
+    model to inline its own negatives. Idempotent — safe to apply again to a
+    critique-refine pass's output.
+    """
+    for variant in output.variants:
+        variant.full_prompt = fold_negatives_into_prompt(
+            variant.full_prompt, variant.generation_notes.negative_prompts
+        )
+    return output
 
 
 def run_task_i2(
@@ -128,4 +144,4 @@ Output all variants in the structured format specified."""
         task="i2",
     )
 
-    return result
+    return fold_variant_negatives(result)

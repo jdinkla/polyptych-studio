@@ -182,3 +182,33 @@ class TestI2CritiqueLoop:
         # Manifest records the enabled loop
         manifest = yaml.safe_load((pipeline.output_dir / "manifest.yaml").read_text())
         assert manifest["critique_rounds"] == 1
+
+    def test_refined_variant_negatives_are_folded(
+        self, tmp_path, source_text, mock_client
+    ):
+        # TASK-102: the refine pass replaces variants wholesale, so its output
+        # needs the same deterministic AVOID-line fold as the initial i2 call.
+        refined_variant = _variant(1)
+        refined_variant.generation_notes.negative_prompts = ["clip art", "gradients"]
+        refined = TaskI2Output(variants=[refined_variant])
+
+        mock_client.register_structured("i0", _i0())
+        mock_client.register_structured("i1", _i1())
+        mock_client.register_structured("i2", TaskI2Output(variants=[_variant(1)]))
+        mock_client.register_structured("i2_critique", _critique(has_issues=True))
+        mock_client.register_structured("i2_refine", refined)
+
+        pipeline = self._run(
+            tmp_path,
+            source_text,
+            mock_client,
+            skip_critique=False,
+            critique_rounds=1,
+        )
+
+        canonical = yaml.safe_load(
+            (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i2"]).read_text()
+        )
+        assert canonical["variants"][0]["full_prompt"].endswith(
+            "AVOID: clip art, gradients."
+        )

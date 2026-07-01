@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`generation_notes.negative_prompts` now reaches the image providers.** No
+  pixbridge provider reads the `negative_prompts` field — providers send only
+  `full_prompt` — so the negatives both pipelines carefully author (style
+  forbidden-elements, "no text" rules, brand-logo bans) were inert metadata.
+  They are now folded into the prompt text as a single trailing `AVOID: ...`
+  line at every seam that finalizes a prompt: slide task7's deterministic
+  assembly (`finalize_draft`), infographic i2 generation, and the i2
+  critique-refine pass (which replaces variants wholesale). The fold is
+  idempotent and skips empty/blank entries; prompts without negatives are
+  unchanged.
+
 ## [0.3.0] - 2026-06-30
 
 ### Added

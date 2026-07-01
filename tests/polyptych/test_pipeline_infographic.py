@@ -159,21 +159,32 @@ def _build_pipeline(
 
 class TestRunInfographicPipeline:
     def test_runs_i0_i1_i2_then_images_in_order(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         mock_client.register_structured("i0", _i0())
         mock_client.register_structured("i1", _i1())
         mock_client.register_structured("i2", TaskI2Output(variants=[_variant(1)]))
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
 
-        with patch.object(pipeline, "_make_image_client", return_value=MockImageClient()):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(
-                provider="gemini",
-                num_variants=1,
-                skip_images=False,
-            ))
+        with patch.object(
+            pipeline, "_make_image_client", return_value=MockImageClient()
+        ):
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    skip_images=False,
+                )
+            )
 
         # Each task YAML must exist
         assert (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i0"]).is_file()
@@ -181,12 +192,12 @@ class TestRunInfographicPipeline:
         assert (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i2"]).is_file()
 
         # Per-variant prompt yaml must exist
-        assert (pipeline.output_dir / "prompts" / "infographic-v1-prompt.yaml").is_file()
+        assert (
+            pipeline.output_dir / "prompts" / "infographic-v1-prompt.yaml"
+        ).is_file()
 
         # Manifest captures pipeline + num_variants
-        manifest = yaml.safe_load(
-            (pipeline.output_dir / "manifest.yaml").read_text()
-        )
+        manifest = yaml.safe_load((pipeline.output_dir / "manifest.yaml").read_text())
         assert manifest["pipeline"] == "infographic"
         assert manifest["num_variants"] == 1
 
@@ -194,14 +205,66 @@ class TestRunInfographicPipeline:
         images = list((pipeline.output_dir / "images").glob("infographic-v1.*"))
         assert len(images) == 1
 
+    def test_i2_negative_prompts_folded_into_full_prompt(
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
+    ):
+        # TASK-102: providers send only full_prompt, so each variant's
+        # negatives must be folded into the prompt text as an AVOID line.
+        variant = _variant(1)
+        variant.generation_notes.negative_prompts = [
+            "blurry text",
+            "photographic elements",
+        ]
+        mock_client.register_structured("i0", _i0())
+        mock_client.register_structured("i1", _i1())
+        mock_client.register_structured("i2", TaskI2Output(variants=[variant]))
+        pipeline = _build_pipeline(
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
+        )
+
+        with patch.object(
+            pipeline, "_make_image_client", return_value=MockImageClient()
+        ):
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    skip_images=True,
+                )
+            )
+
+        avoid = "AVOID: blurry text, photographic elements."
+        canonical = yaml.safe_load(
+            (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i2"]).read_text()
+        )
+        assert canonical["variants"][0]["full_prompt"].endswith(avoid)
+        prompt_file = yaml.safe_load(
+            (pipeline.output_dir / "prompts" / "infographic-v1-prompt.yaml").read_text()
+        )
+        assert avoid in prompt_file["full_prompt"]
+
     def test_skip_images_does_not_call_image_client(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         mock_client.register_structured("i0", _i0())
         mock_client.register_structured("i1", _i1())
         mock_client.register_structured("i2", TaskI2Output(variants=[_variant(1)]))
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
 
         called = {"count": 0}
@@ -211,11 +274,13 @@ class TestRunInfographicPipeline:
             return MockImageClient()
 
         with patch.object(pipeline, "_make_image_client", side_effect=_track):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(
-                provider="gemini",
-                num_variants=1,
-                skip_images=True,
-            ))
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    skip_images=True,
+                )
+            )
 
         assert called["count"] == 0
         assert (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i2"]).is_file()
@@ -223,51 +288,85 @@ class TestRunInfographicPipeline:
         assert images == []
 
     def test_invalid_from_step_raises(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
         with pytest.raises(ValueError, match="Invalid from_step"):
             pipeline.run_infographic_pipeline(InfographicRunConfig(from_step="bogus"))
 
     def test_invalid_to_step_raises(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
         with pytest.raises(ValueError, match="Invalid to_step"):
             pipeline.run_infographic_pipeline(InfographicRunConfig(to_step="bogus"))
 
     def test_from_after_to_raises(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
         with pytest.raises(ValueError, match="is after"):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(from_step="i2", to_step="i0"))
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(from_step="i2", to_step="i0")
+            )
 
     def test_resume_from_i1_loads_i0_dependency(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         # Pre-write a valid i0 yaml so resuming from i1 succeeds.
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
         pipeline._save_yaml(_i0().model_dump(), INFOGRAPHIC_OUTPUT_FILES["i0"])
 
         mock_client.register_structured("i1", _i1())
         mock_client.register_structured("i2", TaskI2Output(variants=[_variant(1)]))
 
-        with patch.object(pipeline, "_make_image_client", return_value=MockImageClient()):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(
-                provider="gemini",
-                num_variants=1,
-                from_step="i1",
-                skip_images=True,
-            ))
+        with patch.object(
+            pipeline, "_make_image_client", return_value=MockImageClient()
+        ):
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    from_step="i1",
+                    skip_images=True,
+                )
+            )
 
         # i0 must NOT have been called (was loaded from disk)
         assert mock_client.call_count("structured:i0") == 0
@@ -275,13 +374,20 @@ class TestRunInfographicPipeline:
         assert mock_client.call_count("structured:i1") == 1
 
     def test_existing_image_is_skipped(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         mock_client.register_structured("i0", _i0())
         mock_client.register_structured("i1", _i1())
         mock_client.register_structured("i2", TaskI2Output(variants=[_variant(1)]))
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
 
         # Pre-write a fake image so the pipeline skips regeneration
@@ -291,31 +397,44 @@ class TestRunInfographicPipeline:
 
         image_client = MockImageClient()
         with patch.object(pipeline, "_make_image_client", return_value=image_client):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(
-                provider="gemini",
-                num_variants=1,
-                skip_images=False,
-            ))
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    skip_images=False,
+                )
+            )
 
         assert existing.read_bytes() == b"fake-png"
         assert image_client._call_count == 0
 
     def test_to_i1_stops_before_i2(
-        self, tmp_path, source_text, infographic_model_config, mock_client,
+        self,
+        tmp_path,
+        source_text,
+        infographic_model_config,
+        mock_client,
     ):
         """to_step='i1' should not run i2 or images."""
         mock_client.register_structured("i0", _i0())
         mock_client.register_structured("i1", _i1())
         pipeline = _build_pipeline(
-            tmp_path, source_text, infographic_model_config, mock_client,
+            tmp_path,
+            source_text,
+            infographic_model_config,
+            mock_client,
         )
 
-        with patch.object(pipeline, "_make_image_client", return_value=MockImageClient()):
-            pipeline.run_infographic_pipeline(InfographicRunConfig(
-                provider="gemini",
-                num_variants=1,
-                to_step="i1",
-            ))
+        with patch.object(
+            pipeline, "_make_image_client", return_value=MockImageClient()
+        ):
+            pipeline.run_infographic_pipeline(
+                InfographicRunConfig(
+                    provider="gemini",
+                    num_variants=1,
+                    to_step="i1",
+                )
+            )
 
         assert (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i0"]).is_file()
         assert (pipeline.output_dir / INFOGRAPHIC_OUTPUT_FILES["i1"]).is_file()

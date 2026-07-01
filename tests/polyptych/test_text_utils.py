@@ -1,7 +1,34 @@
 """Tests for polyptych.text_utils."""
 
+from polyptych.text_utils import (
+    fold_negatives_into_prompt,
+    number_paragraphs,
+    parse_paragraphs,
+)
 
-from polyptych.text_utils import number_paragraphs, parse_paragraphs
+
+class TestFoldNegativesIntoPrompt:
+    def test_appends_avoid_line(self):
+        result = fold_negatives_into_prompt("GOAL: x", ["blurry text", "modern"])
+        assert result == "GOAL: x\n\nAVOID: blurry text, modern."
+
+    def test_none_leaves_prompt_unchanged(self):
+        assert fold_negatives_into_prompt("GOAL: x", None) == "GOAL: x"
+
+    def test_empty_list_leaves_prompt_unchanged(self):
+        assert fold_negatives_into_prompt("GOAL: x", []) == "GOAL: x"
+
+    def test_blank_entries_are_dropped(self):
+        result = fold_negatives_into_prompt("GOAL: x", ["  ", "", "color"])
+        assert result == "GOAL: x\n\nAVOID: color."
+
+    def test_all_blank_entries_leave_prompt_unchanged(self):
+        assert fold_negatives_into_prompt("GOAL: x", ["  ", ""]) == "GOAL: x"
+
+    def test_idempotent(self):
+        once = fold_negatives_into_prompt("GOAL: x", ["color", "modern"])
+        twice = fold_negatives_into_prompt(once, ["color", "modern"])
+        assert twice == once
 
 
 class TestParseParagraphs:

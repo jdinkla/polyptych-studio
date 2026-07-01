@@ -4,6 +4,7 @@ from ..client import TextClient
 from ..models import TaskI0Output, TaskI1Output, TaskI2Critique, TaskI2Output
 from ..prompt_loader import load_infographic_task_prompt, load_provider_guidelines
 from ..text_utils import dump_yaml
+from .task_i2_prompts import fold_variant_negatives
 
 
 def _needs_refinement(critique: TaskI2Critique) -> bool:
@@ -197,7 +198,7 @@ Revise the prompts following the system instructions:
 
 Provide the complete corrected output in the structured format specified."""
 
-    return client.generate_structured(
+    result = client.generate_structured(
         prompt=user_prompt,
         response_schema=TaskI2Output,
         model=model,
@@ -205,3 +206,4 @@ Provide the complete corrected output in the structured format specified."""
         max_output_tokens=max_output_tokens,
         task="i2_refine",
     )
+    return fold_variant_negatives(result)

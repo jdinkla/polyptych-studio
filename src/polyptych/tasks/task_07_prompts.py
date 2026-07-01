@@ -15,7 +15,7 @@ from ..models import (
     Task7Output,
 )
 from ..prompt_loader import load_task_prompt, load_provider_guidelines
-from ..text_utils import dump_yaml
+from ..text_utils import dump_yaml, fold_negatives_into_prompt
 
 
 # Layout-specific text placement guidelines
@@ -164,7 +164,10 @@ def finalize_draft(
     elif slide is not None:
         sections.text_elements = build_text_elements(slide, callout_treatment) or None
     return ImagePrompt(
-        full_prompt=assemble_full_prompt(sections),
+        full_prompt=fold_negatives_into_prompt(
+            assemble_full_prompt(sections),
+            draft.generation_notes.negative_prompts,
+        ),
         sections=sections,
         generation_notes=draft.generation_notes,
     )

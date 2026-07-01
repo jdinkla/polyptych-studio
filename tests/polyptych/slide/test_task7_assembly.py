@@ -153,6 +153,24 @@ class TestFinalizeDraft:
         assert result.sections.text_elements is None
         assert "TEXT ELEMENTS" not in result.full_prompt
 
+    def test_negative_prompts_folded_as_avoid_line(self) -> None:
+        # TASK-102: providers send only full_prompt, so negatives must be
+        # folded into the prompt text to have any effect.
+        task6 = make_task6_output(slide_count=1)
+        draft = _draft()
+        draft.generation_notes.negative_prompts = ["color", "modern", "smiling"]
+        result = finalize_draft(draft, task6.slides[0], False, None)
+        assert result.full_prompt.endswith("AVOID: color, modern, smiling.")
+        # The fold lands after the assembled sections, not inside them.
+        assert result.full_prompt.index("CONSISTENCY:") < result.full_prompt.index(
+            "AVOID:"
+        )
+
+    def test_no_negative_prompts_no_avoid_line(self) -> None:
+        task6 = make_task6_output(slide_count=1)
+        result = finalize_draft(_draft(), task6.slides[0], False, None)
+        assert "AVOID:" not in result.full_prompt
+
 
 class TestRunTask7WithDrafts:
     def test_full_prompt_assembled_and_callout_baked(
