@@ -1,7 +1,6 @@
 ---
 name: trace-prompt
 description: Trace a generated image backwards through the pipeline to find where visual issues originated
-argument-hint: <output-directory> <item-number>
 ---
 
 # Prompt Trace — Diagnose Image Generation Issues
@@ -30,7 +29,7 @@ Determine the pipeline from files present:
 
 **Read and display the target image** so you can see what the user is asking about.
 
-Also read `manifest.yaml` first if present (per CLAUDE.md "Reviewing generated outputs") — it records the resolved style preset, provider/quality, and, for locally produced directories (`mode: local`), which text tasks Claude generated (`tasks_completed`) and the `style_prompt` that shaped the prompts.
+Also read `manifest.yaml` first if present (per the shared project instructions, "Reviewing generated outputs") — it records the resolved style preset, provider/quality, and, for locally produced directories (`mode: local`), which text tasks the active agent generated (`tasks_completed`) and the `style_prompt` that shaped the prompts.
 
 ### Step 2: Trace the Pipeline Chain (bottom-up)
 

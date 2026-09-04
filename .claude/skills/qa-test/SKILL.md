@@ -1,7 +1,6 @@
 ---
 name: qa-test
 description: QA-driven test writing for a specific src/ package — analyze coverage gaps and write missing tests
-argument-hint: <package-name>
 ---
 
 # QA Test Writer

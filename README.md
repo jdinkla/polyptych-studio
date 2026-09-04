@@ -110,14 +110,24 @@ The system can be driven two ways:
 
 - **Python CLI** — run `polyptych` directly (or via `just` targets). Best for
   scripts, CI, batch runs, and reproducible pipelines.
-- **Claude Code skills** — inside a Claude Code session, type slash commands
-  like `/run-pipeline`, `/run-local-pipeline`, `/infographic`, `/review-regen`,
-  `/edit-output`. Best for exploration, guided iteration, and running text tasks
-  with Claude as the LLM (zero API cost for text). The skill list is in
-  [CLAUDE.md](CLAUDE.md).
+- **Agent skills** — inside Claude Code, use slash commands such as
+  `/run-pipeline`; inside Codex, invoke the same repository workflows as
+  `$run-pipeline`, `$run-local-pipeline`, `$infographic`, `$review-regen`, or
+  `$edit-output`. Best for exploration, guided iteration, and running text tasks
+  with the active coding agent as the LLM (zero external API cost for text).
+  The shared skill list is in [CLAUDE.md](CLAUDE.md), with Codex-specific entry
+  guidance in [AGENTS.md](AGENTS.md).
 
 Both surfaces share the same task templates, schemas, and output layout. See
 [Operating Modes](docs/explanation/operating-modes.md) for the comparison.
+
+### Codex setup
+
+Open the repository as a Codex project. Codex automatically discovers
+`AGENTS.md`, the shared skills under `.agents/skills/`, the read-only
+`prompt_consistency_reviewer` under `.codex/agents/`, and the project hooks in
+`.codex/hooks.json`. Review and trust the hooks when Codex prompts; they block
+edits to secrets-bearing `.env*` files and format changed Python files.
 
 ## Project structure
 

@@ -1,7 +1,7 @@
 """Local-skill manifest interop (TASK-85).
 
-Local runs (/run-local-pipeline, /run-local-task, /infographic) write a
-manifest.yaml with `mode: local`, `models: claude-local`, and
+Local agent runs (run-local-pipeline, run-local-task, infographic) write a
+manifest.yaml with `mode: local`, `models: agent-local`, and
 `tasks_completed`. A later CLI resume must not be confused by those fields:
 the CLI rewrites the manifest wholesale and consumers read it as a plain
 dict, so extra keys are harmless.
@@ -21,7 +21,7 @@ LOCAL_MANIFEST = {
     "timestamp": "2026-06-13T00:00:00+00:00",
     "git_commit": "abc1234",
     "source": "source.md",
-    "models": "claude-local",
+    "models": "agent-local",
     "style_prompt": "prompts/style-transfer/noir/film-noir.md",
     "tasks_completed": ["task1", "task2", "task3"],
 }
@@ -45,4 +45,4 @@ class TestCliOverwritesLocalManifest:
         # … and the local-only markers are gone (full CLI provenance now).
         assert "mode" not in updated
         assert "tasks_completed" not in updated
-        assert updated["models"] != "claude-local"
+        assert updated["models"] != "agent-local"

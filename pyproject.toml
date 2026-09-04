@@ -79,6 +79,8 @@ packages = ["src/common", "src/polyptych"]
 exclude = [
     "/docs",
     "/.claude",
+    "/.agents",
+    "/.codex",
     "/.github",
     "/examples",
     "/scripts",
@@ -87,6 +89,7 @@ exclude = [
     "/uv.lock",
     "/.envrc.example",
     "/CLAUDE.md",
+    "/AGENTS.md",
 ]
 
 [tool.pytest.ini_options]

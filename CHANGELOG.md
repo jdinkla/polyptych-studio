@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Codex repository support** — `AGENTS.md` loads the shared project guidance,
+  `.agents/skills` exposes the existing agent workflows to Codex, and
+  `.codex/` provides the prompt/config reviewer plus compatible safety and
+  Python-formatting hooks. The shared skills and operating-mode documentation
+  now use agent-neutral local-run metadata.
+
 ## [0.3.1] - 2026-07-01
 
 ### Fixed

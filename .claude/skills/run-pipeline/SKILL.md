@@ -1,7 +1,6 @@
 ---
 name: run-pipeline
 description: Run a pipeline (or resume from a specific step) using the unified `just gen` target plus named presets
-argument-hint: <pipeline> <source-file> <output-dir> [--provider provider] [--style style] [--from step] [--to step]
 ---
 
 # Pipeline Execution — Run or Resume Pipelines
@@ -104,9 +103,42 @@ just gen deck sources/x.md --output-dir generated/x \
     --from images --slides 12,15
 ```
 
+#### Codex, `direnv`, and provider credentials
+
+Codex command shells are non-interactive, so they may not inherit variables
+that the user's terminal loads through the `direnv` shell hook. When this
+repository's `.envrc` is available, run credentialed pipelines explicitly
+through it:
+
+```bash
+direnv exec . just gen deck sources/x.md --output-dir generated/x \
+    --image-preset openai-low --pipeline-preset fast --from images
+```
+
+Before a paid provider run, test only whether the required variable exists;
+never print or inspect its value:
+
+```bash
+direnv exec . sh -c 'test -n "$OPENAI_API_KEY"'
+```
+
+Use the corresponding provider variable (`GOOGLE_API_KEY`/`GEMINI_API_KEY`,
+`OPENAI_API_KEY`, or `XAI_API_KEY`). The project `.envrc` retrieves secrets
+through GPG. If `direnv exec` fails because the sandbox cannot access
+`~/.gnupg`, `gpg-agent`, or `keyboxd`, rerun the presence check and pipeline
+with the required sandbox escalation. Do not read `.envrc`, expose decrypted
+values, or ask the user to paste a key into chat.
+
+Before resuming at `images`, compare `prompt_provider` in `task7-prompts.yaml`
+with the selected image provider. If they differ, regenerate task7 for the
+selected provider first; do not merely relabel prompts that have not been
+tuned against that provider's guidance.
+
 Common error patterns:
 - `Error: Unknown image preset 'foo'` — typo; the message includes a "did you mean" suggestion
 - `Error: Source file not found` — wrong source path
+- `API key required for <provider>` — retry via `direnv exec .` after a
+  no-output presence check; if GPG is sandbox-blocked, request escalation
 - `ContentBlockedError` — content safety filter, may need prompt adjustment
 - `APIError` / `429` — rate limiting, suggest reducing concurrency
 - `ValidationError` — corrupted intermediate output, suggest `--force` or manual fix

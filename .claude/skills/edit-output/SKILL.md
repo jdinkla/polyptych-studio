@@ -1,7 +1,6 @@
 ---
 name: edit-output
 description: Modify a pipeline task YAML output, validate it, and identify downstream tasks that need re-running
-argument-hint: <output-dir> <task-name> <change-description>
 ---
 
 # Edit Pipeline Output — Modify and Resume

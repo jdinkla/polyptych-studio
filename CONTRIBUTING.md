@@ -44,7 +44,8 @@ just test-integration    # opt-in, requires API keys, costs money
 - Update `CHANGELOG.md` under the `Unreleased` heading.
 - When editing prompt templates or the `*-presets.yaml` / `*_config.yaml`
   files, keep them consistent with each other (the
-  `prompt-consistency-reviewer` agent and `polyptych validate` help here).
+  `prompt-consistency-reviewer` / `prompt_consistency_reviewer` specialist and
+  `polyptych validate` help here).
 
 ## Reporting bugs
 

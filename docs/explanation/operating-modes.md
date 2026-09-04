@@ -1,9 +1,12 @@
-# Operating Modes: Python CLI vs Claude Code Skills
+# Operating Modes: Python CLI vs Agent Skills
 
 The system can be driven two ways:
 
 1. **Python CLI mode** — you run `polyptych` directly (or via `just` targets). Pipelines call configured external LLMs and image providers per `model_config.yaml` and `image_model_config.yaml`.
-2. **Claude Code skills mode** — inside a Claude Code session you type `/<skill>` slash commands. The agent orchestrates the work, can substitute itself for the LLM on text tasks, and can iterate on outputs.
+2. **Agent skills mode** — inside Claude Code you invoke `/<skill>`; inside
+   Codex you invoke the same checked-in skill as `$skill`. The active agent
+   orchestrates the work, can substitute itself for the external LLM on text
+   tasks, and can iterate on outputs.
 
 Both modes target the same project, the same task templates under `prompts/tasks/`, the same Pydantic schemas, and the same `generated/<dir>/` output layout. Skill mode is **not** a replacement for the CLI — most skills shell out to it.
 
@@ -11,10 +14,10 @@ Both modes target the same project, the same task templates under `prompts/tasks
 
 |  | Python CLI | Skills |
 |---|---|---|
-| Invocation | `uv run polyptych deck …` (or `just`) | `/run-pipeline …`, `/run-local-pipeline …`, `/infographic …` |
-| Text-task LLM | Configured provider per `model_config.yaml` | Either the configured provider (`/run-pipeline`) **or** Claude itself (`/run-local-pipeline`, `/run-local-task`, `/infographic`) |
+| Invocation | `uv run polyptych deck …` (or `just`) | Claude Code: `/run-pipeline …`; Codex: `$run-pipeline …` |
+| Text-task LLM | Configured provider per `model_config.yaml` | Either the configured provider (`run-pipeline`) **or** the active coding agent (`run-local-pipeline`, `run-local-task`, `infographic`) |
 | Image generation | Configured provider | Same — skills delegate to the CLI |
-| Reproducibility | Deterministic given source, config, seeds | Lower for text tasks generated locally — output reflects Claude's in-conversation reasoning |
+| Reproducibility | Deterministic given source, config, seeds | Lower for text tasks generated locally — output reflects the active agent's in-conversation reasoning |
 | Cost | One API bill per text task + image generation | Zero API cost for text tasks run locally; image cost unchanged |
 | Iteration | Hand-edit YAML, re-run with `--from <step>` | `/edit-output` proposes a change and replays downstream tasks |
 | Debugging | Read logs, YAML, and `manifest.yaml` by hand | `/check-status`, `/review-regen`, `/trace-prompt` summarize state |
@@ -25,13 +28,15 @@ Both modes target the same project, the same task templates under `prompts/tasks
 
 - Running in CI, batch jobs, scripts, or `just` targets.
 - You want determinism — same source, same config, same output.
-- You're tuning prompt templates or `model_config.yaml` and want each result attributable to that config (not to Claude's in-conversation reasoning).
+- You're tuning prompt templates or `model_config.yaml` and want each result attributable to that config (not to the coding agent's in-conversation reasoning).
 - You need a capability with no skill: `polyptych validate`.
 
 **Skills** are the right surface when:
 
 - You're exploring — drafting a style preset (`/new-style`), deciding what to fix.
-- You want to skip the API for text tasks: `/run-local-pipeline`, `/run-local-task`, and `/infographic` have Claude generate the YAML directly. Image generation still hits the configured provider.
+- You want to skip the external API for text tasks: `run-local-pipeline`,
+  `run-local-task`, and `infographic` have the active coding agent generate the
+  YAML directly. Image generation still hits the configured provider.
 - You want guided review and iteration: `/check-status` to see what exists, `/review-regen` to plan regenerations, `/edit-output` to change one task and replay downstream, `/trace-prompt` to diagnose a bad image.
 - You're authoring scaffolding — `/clean-source` strips PDF artifacts, `/qa-test` writes missing tests for a `src/` package.
 
@@ -39,7 +44,7 @@ The two modes mix freely. A typical agent flow:
 
 ```
 /clean-source sources/essay.md                                    # strip PDF artifacts
-/run-local-pipeline infographic sources/essay.md                  # text tasks via Claude (no API cost)
+/run-local-pipeline infographic sources/essay.md                  # text tasks via active agent (no external API cost)
 /run-pipeline infographic sources/essay.md generated/foo --from images   # CLI for images
 /review-regen generated/foo                                       # review and plan regenerations
 /edit-output generated/foo i2 "tighten prompt 3"                  # iterate
@@ -52,7 +57,7 @@ The Python CLI is the larger surface. Skills are a curated layer over the workfl
 | Capability | Python CLI | Skill |
 |---|---|---|
 | Run a pipeline | `polyptych {deck,infographic}` | `/run-pipeline`, `/infographic` |
-| Run text tasks locally (Claude as LLM) | — | `/run-local-pipeline`, `/run-local-task`, `/infographic` |
+| Run text tasks locally (active agent as LLM) | — | `/run-local-pipeline`, `/run-local-task`, `/infographic` |
 | Resume from a step | `--from <step>` | `/run-pipeline --from <step>` |
 | Validate task YAML | `polyptych validate` | used internally by skills |
 | Clean PDF source | `polyptych clean-source` | `/clean-source` |
@@ -67,4 +72,5 @@ The Python CLI is the larger surface. Skills are a curated layer over the workfl
 ## See also
 
 - [CLI Reference](../reference/cli-reference.md) — full Python CLI surface.
-- [CLAUDE.md](../../CLAUDE.md) — canonical list of available skills.
+- [CLAUDE.md](../../CLAUDE.md) — shared project guidance and canonical skill list.
+- [AGENTS.md](../../AGENTS.md) — Codex entrypoint and invocation notes.

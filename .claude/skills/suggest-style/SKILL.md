@@ -1,7 +1,6 @@
 ---
 name: suggest-style
 description: Analyze a source text and recommend the best-fitting style-transfer preset(s) from prompts/style-transfer/, or propose a brief for a new one to be created via /new-style
-argument-hint: <source-file> [pipeline]
 ---
 
 # Suggest — Style Transfer Recommendation

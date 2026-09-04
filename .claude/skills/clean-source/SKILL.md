@@ -1,7 +1,6 @@
 ---
 name: clean-source
 description: Clean PDF-converted markdown files by removing page numbers, footnotes, TOC, broken images, and escaped characters
-argument-hint: <input-file> [--output <file>] [--keep-footnotes] [--keep-toc]
 ---
 
 # Clean Source — PDF Markdown Cleanup

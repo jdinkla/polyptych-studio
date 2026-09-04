@@ -30,7 +30,7 @@ Technical descriptions of the system's machinery.
 
 Understanding-oriented discussion of architecture and design decisions.
 
-- [Operating Modes](explanation/operating-modes.md) — Python CLI vs Claude Code skills, and when to use which
+- [Operating Modes](explanation/operating-modes.md) — Python CLI vs Claude Code/Codex skills, and when to use which
 - [System Overview](explanation/system-overview.md) — slide pipeline architecture
 - [Pipeline Architectures](explanation/pipeline-architectures.md) — infographic pipeline internals and shared infrastructure
 - [Task Decomposition](explanation/task-decomposition.md) — slide pipeline tasks 1–7

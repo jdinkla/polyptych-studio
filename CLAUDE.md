@@ -1,4 +1,7 @@
-# CLAUDE.md
+# Shared Agent Instructions
+
+This is the canonical project guidance for both Claude Code and Codex. Codex
+loads it through the repository's `AGENTS.md` entrypoint.
 
 ## Project Purpose
 
@@ -109,23 +112,26 @@ just gen infographic sources/x.md --output-dir generated/x \
 Run `just --list` for the full target list. See
 [docs/reference/cli-reference.md](docs/reference/cli-reference.md) for details.
 
-## Use Context7 by Default
+## Use Context7 When Available
 
-Always use Context7 when code generation, setup or configuration steps, or
-library/API documentation is needed — use the Context7 MCP tools to resolve
-library IDs and get library docs without requiring explicit user requests.
+When the Context7 MCP integration is available, use it for library/API
+documentation needed during code generation, setup, or configuration. If it is
+not available, use primary documentation through the tools the active agent
+provides.
 
 ## Agent Skills — Autonomous Pipeline Operation
 
-Skills enable Claude Code to operate the pipelines autonomously. They live in
-`.claude/skills/` and are invoked as slash commands.
+Skills enable Claude Code and Codex to operate the pipelines autonomously. The
+canonical files live in `.claude/skills/` and are exposed to Codex through
+`.agents/skills/`. Invoke them as `/skill-name` in Claude Code or
+`$skill-name` in Codex.
 
 **Run / orchestrate**
 
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | `run-pipeline` | `/run-pipeline <pipeline> <source> <output-dir> [flags]` | Execute or resume a pipeline via the correct `just` target |
-| `run-local-pipeline` | `/run-local-pipeline <pipeline> <source> [output-dir] [flags]` | Run all text tasks locally (Claude generates YAML), stopping before image generation |
+| `run-local-pipeline` | `/run-local-pipeline <pipeline> <source> [output-dir] [flags]` | Run all text tasks locally (the active agent generates YAML), stopping before image generation |
 | `run-local-task` | `/run-local-task <task-name> <output-dir> [--source file]` | Execute a single task locally |
 | `infographic` | `/infographic <source-file> [style] [image-preset]` | One-shot infographic: runs i0–i2 locally (zero API cost), then images |
 
@@ -165,7 +171,7 @@ Cost-control decisions belong **upfront** (pick the right `--image-preset`,
 **Prefer local for development.** When developing/iterating on the pipelines
 (prompt edits, post-processing, validators), prefer the local skills —
 `/run-local-pipeline`, `/run-local-task`, `/infographic` (text tasks) — over
-external LLM/image APIs. Local runs let Claude generate the task YAML directly,
+external LLM/image APIs. Local runs let the active coding agent generate the task YAML directly,
 so they cost nothing. Reach for the external-API path only when the work
 requires it (final image generation, provider-specific behavior).
 
@@ -185,7 +191,7 @@ recoverable from the user's command line alone. Cite the manifest's
 quality/style values when explaining why an output looks the way it does.
 
 Local skill runs (`/run-local-pipeline`, `/run-local-task`, `/infographic`)
-write a compatible manifest too (`mode: local`, `models: claude-local`,
+write a compatible manifest too (`mode: local`, `models: agent-local`,
 `tasks_completed`, plus the shared `pipeline`/`source`/`style_prompt`/
 `git_commit` fields); a later CLI image run overwrites it with the full manifest.
 

@@ -1,10 +1,6 @@
 ---
 name: check-models
 description: Search the web for the latest AI model names and identifiers for a provider, then compare with model_config.yaml and image_model_config.yaml
-user-invocable: true
-args:
-  - name: provider
-    description: "Provider to check: gemini, openai, xai/grok, anthropic/claude, vertex, or 'all' to check every provider. Optional — defaults to 'all' when omitted."
 ---
 
 # Check Latest AI Models for a Provider

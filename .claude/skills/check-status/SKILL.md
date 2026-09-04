@@ -1,7 +1,6 @@
 ---
 name: check-status
 description: Check the current state of a pipeline output directory — which tasks are done, what's next, and key summary info
-argument-hint: <output-directory>
 ---
 
 # Pipeline Status — Situational Awareness
@@ -43,7 +42,7 @@ If `$ARGUMENTS/manifest.yaml` exists, read it to extract:
 - Style preset used
 - Image provider and model
 - Timestamp
-- `mode: local` — the directory was produced by a local skill run (`/run-local-pipeline`, `/run-local-task`, `/infographic`): text-task YAMLs were Claude-generated (`models: claude-local`), image settings are absent until a CLI image run overwrites the manifest, and `tasks_completed` lists the finished text tasks
+- `mode: local` — the directory was produced by a local skill run (`run-local-pipeline`, `run-local-task`, or `infographic`): text-task YAMLs were agent-generated (`models: agent-local`), image settings are absent until a CLI image run overwrites the manifest, and `tasks_completed` lists the finished text tasks
 
 ### Step 3: Detect Pipeline Type and Count Outputs
 

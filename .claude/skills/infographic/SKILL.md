@@ -1,7 +1,6 @@
 ---
 name: infographic
 description: Generate a complete infographic from a source essay — text tasks run locally (zero API cost), images via the chosen image preset (default openai-low)
-argument-hint: <source-file> [style] [image-preset]
 ---
 
 # Infographic — One-Shot Pipeline
@@ -99,7 +98,7 @@ The CLI equivalent is `--critique` / `--pipeline-preset critique` on `polyptych 
 
 ### Step 4.6: Write manifest.yaml
 
-Before image generation, write `$OUTPUT_DIR/manifest.yaml` recording the local text-task run (field template in the run-local-pipeline skill, Step 4): `pipeline: infographic`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: claude-local`, `style_prompt` (resolved style path), `tasks_completed: [i0, i1, i2]`. The CLI image run in Step 5 overwrites it with the full CLI manifest (provider/size/quality) — that's expected; this manifest covers the case where Step 5 is skipped or fails, so review skills aren't blind.
+Before image generation, write `$OUTPUT_DIR/manifest.yaml` recording the local text-task run (field template in the run-local-pipeline skill, Step 4): `pipeline: infographic`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: agent-local`, `style_prompt` (resolved style path), `tasks_completed: [i0, i1, i2]`. The CLI image run in Step 5 overwrites it with the full CLI manifest (provider/size/quality) — that's expected; this manifest covers the case where Step 5 is skipped or fails, so review skills aren't blind.
 
 ### Step 5: Generate Images
 

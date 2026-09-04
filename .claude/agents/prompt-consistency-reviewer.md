@@ -21,26 +21,27 @@ The project keeps several sources of truth that must agree with each other:
   exemplar image)
 - `image-presets.yaml`, `pipeline-presets.yaml`, `model_config.yaml`,
   `image_model_config.yaml`
-- `CLAUDE.md` and `docs/reference/cli-reference.md` — which document flags, presets,
-  pipelines, and task tables
+- `CLAUDE.md`, `AGENTS.md`, and `docs/reference/cli-reference.md` — which
+  document flags, presets, pipelines, task tables, and agent-specific entrypoints
 
 ## Drift patterns to hunt for
 
 1. **Flag/option drift** — a flag or option named in a provider best-practices doc or a
    task template that no longer exists in the CLI / config (or vice versa: a flag in
-   `CLAUDE.md` / cli-reference not honored by any template).
+   the shared project instructions / cli-reference not honored by any template).
 2. **Preset references** — a `--image-preset` / `--pipeline-preset` name referenced in
    docs, task templates, or the justfile that is missing from `image-presets.yaml` /
    `pipeline-presets.yaml`, or a preset defined but referenced nowhere.
-3. **Style presets** — a style category or preset count claimed in `CLAUDE.md`
+3. **Style presets** — a style category or preset count claimed in the shared
+   project instructions
    or the docs that disagrees with what's actually on disk under
    `prompts/style-transfer/`. Count the real files.
 4. **Model/tier references** — task names in `model_config.yaml` that don't correspond to
    a real task template, or templates with no model-tier entry.
-5. **Pipeline/task-table drift** — the pipeline list and per-task tables in `CLAUDE.md` /
-   cli-reference vs. the actual `task-*` templates present.
-6. **Cross-doc contradictions** — same fact stated two ways in CLAUDE.md vs.
-   cli-reference vs. a provider doc.
+5. **Pipeline/task-table drift** — the pipeline list and per-task tables in the
+   shared project instructions / cli-reference vs. the actual `task-*` templates present.
+6. **Cross-doc contradictions** — same fact stated two ways in `CLAUDE.md`,
+   `AGENTS.md`, cli-reference, or a provider doc.
 
 ## Method
 

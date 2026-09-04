@@ -1,7 +1,6 @@
 ---
 name: run-local-pipeline
-description: Run all text tasks of any pipeline locally (Claude generates YAML instead of calling external LLMs), stopping before image generation
-argument-hint: <pipeline> <source-file> [output-dir] [--style <preset>] [--critique] [--qa]
+description: Run all text tasks of any pipeline locally (the active coding agent generates YAML instead of calling external LLMs), stopping before image generation
 ---
 
 # Local Pipeline — Full Text Pipeline Execution
@@ -121,7 +120,7 @@ mode: local                               # marks a skill-mode run (CLI manifest
 timestamp: <UTC ISO-8601>                 # date -u +%Y-%m-%dT%H:%M:%S+00:00
 git_commit: <short hash>                  # git rev-parse --short HEAD
 source: <source file basename>            # e.g. essay.md (matches CLI: name only)
-models: claude-local                      # Claude generated the task YAML locally
+models: agent-local                       # the active agent generated the task YAML locally
 style_prompt: <path passed via --style>   # omit if no style was used
 tasks_completed: [task1, task2, ...]      # text tasks that exist and validate
 ```
@@ -220,4 +219,4 @@ If task1–task4 already exist and validate, skips them and starts from task5.
 - This skill follows the exact same per-task process as `/run-local-task` — it just chains the tasks automatically based on the pipeline DAG.
 - The `/infographic` skill is a specialized equivalent of `/run-local-pipeline infographic` that also runs image generation. Use `/infographic` if you want images included; use `/run-local-pipeline infographic` if you only want the text tasks.
 - For image generation after text tasks, use the suggested `just` command or `/run-pipeline <pipeline> $SOURCE $OUTPUT_DIR --from images`.
-- All text tasks are well within Claude's capabilities. The batched task A1 is the most demanding due to length, but generating it in a single pass avoids the complexity of batch merging.
+- All text tasks are well within the active coding agent's capabilities. The batched task A1 is the most demanding due to length, but generating it in a single pass avoids the complexity of batch merging.

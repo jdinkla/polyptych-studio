@@ -1,7 +1,6 @@
 ---
 name: review-regen
 description: Review generated images in an output directory, identify quality issues, and build selective regeneration commands
-argument-hint: <output-directory>
 ---
 
 # Review Generated Output & Plan Selective Regeneration

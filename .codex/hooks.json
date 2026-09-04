@@ -1,0 +1,31 @@
+{
+  "description": "Polyptych repository safeguards shared with Claude Code.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.claude/hooks/block-sensitive-files.sh\"",
+            "timeout": 5,
+            "statusMessage": "Checking for secrets-bearing files"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.claude/hooks/ruff-format.sh\"",
+            "timeout": 30,
+            "statusMessage": "Formatting changed Python files"
+          }
+        ]
+      }
+    ]
+  }
+}

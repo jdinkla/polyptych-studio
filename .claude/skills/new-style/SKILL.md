@@ -1,7 +1,6 @@
 ---
 name: new-style
 description: Create a new visual style transfer preset for image generation pipelines
-argument-hint: <preset-name> <creative-brief>
 ---
 
 # Create Style Transfer Preset
