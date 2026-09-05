@@ -17,6 +17,14 @@ from .base import (
 T = TypeVar("T", bound=BaseModel)
 
 
+def _reasoning_kwargs(model: str, thinking_budget: int | None) -> dict:
+    """Translate tier intent for the configured models, not an exact token budget."""
+    for name, fast_effort in (("gpt-5.6-sol", "none"), ("gpt-6-astra", "low")):
+        if model == name or model.startswith(name + "-"):
+            return {"reasoning_effort": "high" if thinking_budget else fast_effort}
+    return {}
+
+
 def _create(client: OpenAI, **kwargs):
     """Call the chat completions endpoint, retrying transient SDK errors."""
 
@@ -116,7 +124,8 @@ class OpenAITextProvider(BaseTextProvider):
             },
         }
         if max_output_tokens:
-            kwargs["max_tokens"] = max_output_tokens
+            kwargs["max_completion_tokens"] = max_output_tokens
+        kwargs.update(_reasoning_kwargs(model, thinking_budget))
 
         def produce_response():
             t0 = time.monotonic()
@@ -146,7 +155,12 @@ class OpenAITextProvider(BaseTextProvider):
         messages.append({"role": "user", "content": prompt})
 
         t0 = time.monotonic()
-        response = _create(client, model=model, messages=messages)
+        response = _create(
+            client,
+            model=model,
+            messages=messages,
+            **_reasoning_kwargs(model, thinking_budget),
+        )
         duration_s = time.monotonic() - t0
         gen_result = self._extract_result(response, model, duration_s)
 

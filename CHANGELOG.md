@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Refresh text defaults to Gemini 3.8 Flash (Gemini and Vertex), GPT-5.6 Sol /
+  GPT-6 Astra, Grok 4.6 (thinking), and Claude Sonnet 5 / Opus 5. Vertex's
+  3.8 Flash is a short-term release; Astra API access depends on account rollout.
+- Replace xAI's retiring image-quality model with `grok-imagine-image-2.0`.
+- Use OpenAI completion-token limits and explicit Sol/Astra/Grok 4.6 reasoning
+  effort; use adaptive thinking for Claude 5. Positive thinking budgets map to
+  high effort, not exact token counts, for these models. Fast tasks disable
+  thinking where supported, otherwise use low effort. Legacy model overrides
+  retain their reasoning behavior.
+
 ### Added
 
 - **Codex repository support** — `AGENTS.md` loads the shared project guidance,

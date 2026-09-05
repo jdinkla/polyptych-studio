@@ -152,8 +152,9 @@ def resolve_thinking_budget(
 ) -> int | None:
     """Look up the extended thinking budget for a pipeline step.
 
-    Returns None if the provider doesn't support extended thinking (i.e. not
-    anthropic) or if the task is on the fast tier (no thinking needed).
+    Returns None for fast tasks and providers without budget/effort routing.
+    Modern OpenAI, xAI and Claude models translate this into reasoning effort;
+    legacy Claude overrides use an exact token budget.
 
     Args:
         config: The loaded ModelConfig.
@@ -163,7 +164,7 @@ def resolve_thinking_budget(
     Returns:
         Thinking budget in tokens, or None if not applicable.
     """
-    if provider != "anthropic":
+    if provider not in {"anthropic", "openai", "xai"}:
         return None
     tier = config.tasks.get(task_name, "fast")
     if tier == "fast":

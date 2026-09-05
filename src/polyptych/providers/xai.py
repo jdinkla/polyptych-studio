@@ -22,6 +22,13 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
+def _reasoning_kwargs(model: str, thinking_budget: int | None) -> dict:
+    """Grok 4.6 supports effort, but cannot disable reasoning."""
+    if model == "grok-4.6" or model.startswith("grok-4.6-"):
+        return {"reasoning_effort": "high" if thinking_budget else "low"}
+    return {}
+
+
 def _create(client: OpenAI, **kwargs):
     """Call the chat completions endpoint, retrying transient SDK errors."""
 
@@ -127,6 +134,7 @@ class XAITextProvider(BaseTextProvider):
         }
         if max_output_tokens:
             kwargs["max_tokens"] = max_output_tokens
+        kwargs.update(_reasoning_kwargs(model, thinking_budget))
 
         def produce_response():
             t0 = time.monotonic()
@@ -181,7 +189,12 @@ class XAITextProvider(BaseTextProvider):
         messages.append({"role": "user", "content": prompt})
 
         t0 = time.monotonic()
-        response = _create(client, model=model, messages=messages)
+        response = _create(
+            client,
+            model=model,
+            messages=messages,
+            **_reasoning_kwargs(model, thinking_budget),
+        )
         duration_s = time.monotonic() - t0
         gen_result = self._extract_result(response, model, duration_s)
 

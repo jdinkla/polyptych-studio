@@ -6,5 +6,5 @@ providers:
   x_gemini: gemini-3.1-flash-image
   gemini: gemini-3-pro-image
   openai: gpt-image-2
-  xai: grok-imagine-image-quality
+  xai: grok-imagine-image-2.0
   vertex: gemini-3-pro-image

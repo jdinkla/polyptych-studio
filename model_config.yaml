@@ -7,19 +7,20 @@
 # Which model to use for each tier, per LLM provider
 providers:
   gemini:
-    fast: gemini-3.5-flash
+    fast: gemini-3.8-flash
     thinking: gemini-3.1-pro-preview
   openai:
-    fast: gpt-5.5
-    thinking: gpt-5.5-pro
+    fast: gpt-5.6-sol
+    thinking: gpt-6-astra
   xai:
     fast: grok-4.20-non-reasoning
-    thinking: grok-4.3
+    thinking: grok-4.6
   anthropic:
-    fast: claude-sonnet-4-6
-    thinking: claude-opus-4-8
+    fast: claude-sonnet-5
+    thinking: claude-opus-5
   vertex:
-    fast: gemini-3.5-flash
+    # Short-term release: retires 45 days after its successor on Vertex.
+    fast: gemini-3.8-flash
     thinking: gemini-3.1-pro-preview
 
 # Which tier each pipeline step uses
@@ -52,7 +53,12 @@ max_output_tokens:
   i2_refine: 16000    # Prompt correction (full TaskI2Output replacement)
 
 # Per-task extended thinking budgets (applies only to providers that support it)
-# Tasks not listed use the default. Fast-tier tasks get no thinking regardless.
+# Tasks not listed use the default. Fast-tier tasks pass no thinking budget.
+# Sol and Claude 5 disable thinking without a budget; Astra and Grok 4.6 use
+# low effort (reasoning cannot be disabled). A positive budget selects high
+# effort on these models, not an exact token allowance. Legacy Claude models
+# still use token budgets. Gemini/Vertex currently use provider thinking defaults.
+# Output limits include reasoning tokens on reasoning-capable providers.
 thinking_budget:
   default: 10240
   task6: 16384     # Integrates 5 prior outputs

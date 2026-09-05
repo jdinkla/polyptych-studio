@@ -46,9 +46,8 @@ def _create(client: anthropic.Anthropic, **kwargs):
 class AnthropicTextProvider(BaseTextProvider):
     """Text generation provider using Anthropic's Claude API.
 
-    Supports extended thinking via the thinking_budget parameter, which
-    gives Claude a configurable token budget for internal reasoning
-    before producing the final response.
+    Claude 5 maps a positive thinking_budget to adaptive thinking at high
+    effort; older overrides retain manual token-budget thinking.
     """
 
     ENV_KEYS = ["ANTHROPIC_API_KEY"]
@@ -124,7 +123,14 @@ class AnthropicTextProvider(BaseTextProvider):
         }
         if system_instruction:
             kwargs["system"] = system_instruction
-        if thinking_budget:
+        adaptive = any(
+            model == name or model.startswith(name + "-")
+            for name in ("claude-sonnet-5", "claude-opus-5")
+        )
+        if adaptive:
+            kwargs["thinking"] = {"type": "adaptive" if thinking_budget else "disabled"}
+            kwargs["output_config"] = {"effort": "high" if thinking_budget else "low"}
+        elif thinking_budget:
             # Ensure max_tokens accommodates thinking + output
             kwargs["max_tokens"] = max(max_tokens, thinking_budget + 1024)
             kwargs["thinking"] = {

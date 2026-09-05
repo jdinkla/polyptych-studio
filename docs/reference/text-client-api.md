@@ -186,7 +186,13 @@ API keys are resolved via `_get_api_key(env_keys)`: checks the constructor `api_
 
 `vertex` uses Application Default Credentials instead of API keys and is excluded from the auto-fallback chain. `xai` uses the OpenAI SDK with a custom `base_url`.
 
-Anthropic is the only provider that supports `thinking_budget` — when set, it enables extended thinking mode with the specified token budget.
+`thinking_budget` carries task-tier reasoning intent. For GPT-5.6 Sol, GPT-6 Astra,
+Grok 4.6, and Claude Sonnet/Opus 5, a positive budget selects high effort rather
+than an exact token allowance. Without a budget, Sol and Claude 5 disable
+thinking; Astra and Grok 4.6 use low effort. Claude 5 uses adaptive thinking,
+while legacy Claude overrides retain manual token budgets. Other model
+overrides retain provider reasoning defaults. Gemini/Vertex currently ignore
+this parameter and use provider defaults. Output caps include reasoning tokens.
 
 ## Usage Logging
 
@@ -243,7 +249,7 @@ def resolve_model(config: ModelConfig, task_name: str, provider: str = "gemini")
     return config.providers[provider][tier]        # KeyError if provider not configured
 ```
 
-The `ModelConfig` dataclass also provides `resolve_max_output_tokens(task_name)` and `resolve_thinking_budget(task_name, provider)`. Thinking budget always returns `None` for non-Anthropic providers and for tasks on the `fast` tier.
+The model configuration helpers also provide `resolve_max_output_tokens(config, task_name)` and `resolve_thinking_budget(config, task_name, provider)`. Thinking budgets are resolved for Anthropic, OpenAI, and xAI; fast-tier tasks and other providers receive `None`.
 
 ## `repair_truncated_json()`
 

@@ -45,4 +45,4 @@ Critique steps are always **thinking** and refine steps are always **fast** — 
 
 - `--model` / `$POLYPTYCH_MODEL` forces every task onto a single model, ignoring tiers entirely.
 - Per-provider model strings for each tier live under the `providers` key in `model_config.yaml`.
-- `thinking_budget` applies only to providers that support extended thinking (currently Anthropic); fast-tier tasks get no thinking regardless.
+- `thinking_budget` is routed to Anthropic, OpenAI, and xAI. Positive values select high reasoning effort on Sol/Astra, Grok 4.6, and Claude 5; legacy Claude overrides use exact token budgets. Fast-tier tasks receive no budget: Sol and Claude 5 disable thinking, Astra and Grok 4.6 use low effort. Gemini/Vertex retain provider defaults. Output caps include reasoning tokens.
