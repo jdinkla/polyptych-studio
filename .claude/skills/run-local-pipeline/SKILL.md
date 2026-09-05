@@ -102,7 +102,7 @@ Follow the exact process defined in the `/run-local-task` skill:
 
 1. **Read the prompt template** from `prompts/tasks/<prompt-file>.md`
 2. **Read the task implementation** from `src/polyptych/tasks/task_*.py` to understand context assembly
-3. **Read the Pydantic model** from `src/polyptych/models.py` for the exact schema
+3. **Read the Pydantic model** from `src/polyptych/models/slide.py` (slide tasks) or `src/polyptych/models/infographic.py` (infographic tasks) for the exact schema; use `src/polyptych/models/__init__.py` to locate re-exported classes
 4. **Read dependency outputs** from disk (per the DAG)
 5. **Read the source essay** from the output directory
 6. **Generate YAML** conforming to the schema

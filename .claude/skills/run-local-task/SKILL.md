@@ -75,7 +75,10 @@ If a dependency is missing, report it and stop — the task can't run without it
 
 ### Step 5: Read the Pydantic Model
 
-Read the model class definition from `src/polyptych/models.py` to understand the exact schema:
+Read the model class definition from `src/polyptych/models/slide.py` for slide
+tasks or `src/polyptych/models/infographic.py` for infographic tasks.
+`src/polyptych/models/__init__.py` re-exports the public classes; follow the
+import to the defining module when locating a schema. Inspect:
 - Required fields and their types
 - Nested model structures
 - Field descriptions and constraints (min/max values, string patterns)

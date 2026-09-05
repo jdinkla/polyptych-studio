@@ -29,14 +29,31 @@ If required arguments are missing, ask for them.
 
 ### Step 1: Resolve Auto-Resume
 
-If `--from` is not specified and the output directory exists with partial outputs:
+If `--from` is not specified and the output directory exists:
 
 ```bash
 uv run polyptych validate $OUTPUT_DIR --json
 ```
 
-Use the `next_step` from the result to determine where to resume. If empty/missing,
-start from the beginning.
+Validation reports text-task completeness, not whether images exist. Resolve
+the starting step from both validation and the requested outcome:
+
+- If `next_step` names a task, resume from that task. Inspect validation errors
+  and cross-task findings before running dependent tasks; do not treat an
+  invalid checkpoint as completed.
+- If all expected text tasks are valid and `next_step` is null, preserve those
+  checkpoints. For a request to generate images, use `--from images`; the image
+  stage skips existing outputs and generates missing ones unless forced.
+- If the requested outputs already exist, report completion without rerunning
+  the pipeline. Determine expected images from the final prompt output and any
+  requested slide/variant selection; a null `next_step` alone is insufficient.
+- Start from the beginning only for a new directory or one with no task
+  checkpoints. A missing `next_step` field in an otherwise populated result is
+  not permission to restart: inspect the task statuses first.
+
+Honor an explicit `--from` or regeneration request. Do not add `--force` as
+part of ordinary resume handling. Check provider compatibility in Step 5
+before an image-only resume.
 
 ### Step 2: Pick Image + Pipeline Presets
 
