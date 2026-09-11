@@ -41,6 +41,7 @@ class TextClient:
         usage_log: Path | None | object = _UNSET,
         model_resolver: Callable[[str, str], str] | None = None,
         thinking_budget_resolver: Callable[[str, str], int | None] | None = None,
+        on_generation: Callable[[str | None, TextGenerationResult], None] | None = None,
     ):
         """Initialize the text client.
 
@@ -57,7 +58,9 @@ class TextClient:
             model_resolver: Callback (task_name, provider_name) -> model_string.
                            Used to resolve the correct model when falling back.
             thinking_budget_resolver: Callback (task_name, provider_name) -> budget.
-                                     Returns thinking budget or None.
+                                    Returns thinking budget or None.
+            on_generation: Optional observer of successful calls, receiving the
+                           task and actual response metadata (including fallback).
         """
         self.provider_name = provider
         self._api_key = api_key
@@ -67,6 +70,7 @@ class TextClient:
         )
         self.model_resolver = model_resolver
         self.thinking_budget_resolver = thinking_budget_resolver
+        self.on_generation = on_generation
 
         # Resolve fallback chain
         if fallback is not None and fallback == ["none"]:
@@ -90,7 +94,14 @@ class TextClient:
         method: str,
         task: str | None,
     ) -> None:
-        """Log a generation result to the usage JSONL file."""
+        """Record a successful response, independently of usage-file logging."""
+        if self.on_generation is not None:
+            try:
+                self.on_generation(task, gen_result)
+            except Exception:
+                logger.warning(
+                    "Could not record text generation provenance", exc_info=True
+                )
         if self.usage_log is None:
             return
         entry: dict = {

@@ -40,6 +40,8 @@ from .models import (
     Task7Output,
 )
 from .run_config import PipelineRunConfig
+from .providers.base import TextGenerationResult
+from .provenance import read_metadata, read_task_provenance, record_task_provenance
 
 # Image generation client is optional. Importing here so subclasses can
 # call _make_image_client() without re-running the try/except themselves.
@@ -105,6 +107,7 @@ class SlidePipelineBase:
             thinking_budget_resolver=lambda task, prov: resolve_thinking_budget(
                 self.model_config, task, prov
             ),
+            on_generation=self._record_text_generation,
         )
 
         # Load source essay
@@ -149,6 +152,20 @@ class SlidePipelineBase:
         return resolve_model(
             self.model_config, task_name, self.text_client.provider_name
         )
+
+    def _record_text_generation(
+        self, task: str | None, result: TextGenerationResult
+    ) -> None:
+        """Attribute only successful calls, using the responding model."""
+        if task is not None:
+            record_task_provenance(
+                self.output_dir,
+                task,
+                mode="cli",
+                model=result.model,
+                provider=result.provider,
+                model_source="response",
+            )
 
     def _max_tokens_for(self, task_name: str) -> int | None:
         """Resolve the max output token limit for a pipeline step."""
@@ -325,23 +342,60 @@ class SlidePipelineBase:
         pipeline_type: str,
         config: PipelineRunConfig,
     ) -> Path:
-        """Write manifest.yaml capturing how this output was generated."""
-        # Collect distinct models actually configured for this run
-        models_used = sorted(
-            set(resolve_model(self.model_config, t) for t in self.model_config.tasks)
+        """Refresh run settings without replacing recorded text authorship.
+
+        `models` summarizes known local authors and successful API responses.
+        Configuration is explicitly separate and is never evidence of execution.
+        Image settings describe this invocation, not the history of cached images.
+        """
+        previous = read_metadata(self.output_dir / "manifest.yaml")
+        tasks = read_task_provenance(self.output_dir)
+        for entry in tasks.values():
+            if entry.get("mode") == "cli" and "model_source" not in entry:
+                entry["model_source"] = "configured"
+        models = sorted(
+            {
+                entry["model"]
+                for entry in tasks.values()
+                if isinstance(entry.get("model"), str)
+                and (
+                    entry.get("mode") == "local"
+                    or entry.get("model_source") == "response"
+                )
+            }
         )
-        manifest: dict = {
-            "pipeline": pipeline_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "git_commit": self._git_commit_id(),
-            "source": self.source_path.name,
-            "models": models_used if len(models_used) > 1 else models_used[0],
-            "image_provider": config.provider,
-            "image_size": config.size,
-            "aspect_ratio": config.aspect_ratio,
-            "image_quality": config.quality,
-            "style_prompt": config.style_prompt_path,
-        }
+        manifest = dict(previous)
+        if previous.get("models") and not tasks:
+            # Retain unverified history under an explicit name, never silently
+            # reinterpret the defaults written by old CLI versions as authors.
+            manifest.setdefault("legacy_models", previous["models"])
+        for key in ("mode", "text_mode", "steps", "from_step", "to_step"):
+            manifest.pop(key, None)
+        manifest.update(
+            {
+                "pipeline": pipeline_type,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "git_commit": self._git_commit_id(),
+                "source": self.source_path.name,
+                "models": models[0] if len(models) == 1 else models,
+                "models_source": "task_provenance",
+                "task_provenance": tasks,
+                "configured_models": {
+                    task: self._model_for(task) for task in self.model_config.tasks
+                },
+                "image_provider": config.provider,
+                "image_model": config.image_model
+                or self._image_model_for(config.provider),
+                "image_model_source": "run_configuration",
+                "image_size": config.size,
+                "aspect_ratio": config.aspect_ratio,
+                "image_quality": config.quality,
+                "style_prompt": config.style_prompt_path,
+            }
+        )
+        modes = {entry.get("mode") for entry in tasks.values()} - {None}
+        if modes:
+            manifest["mode"] = next(iter(modes)) if len(modes) == 1 else "mixed"
         manifest.update(config._manifest_extras())
         # Strip None values for cleaner output
         manifest = {k: v for k, v in manifest.items() if v is not None}

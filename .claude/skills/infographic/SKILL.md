@@ -98,7 +98,7 @@ The CLI equivalent is `--critique` / `--pipeline-preset critique` on `polyptych 
 
 ### Step 4.6: Write manifest.yaml
 
-Before image generation, write `$OUTPUT_DIR/manifest.yaml` recording the local text-task run (field template in the run-local-pipeline skill, Step 4): `pipeline: infographic`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: agent-local`, `style_prompt` (resolved style path), `tasks_completed: [i0, i1, i2]`. The CLI image run in Step 5 overwrites it with the full CLI manifest (provider/size/quality) — that's expected; this manifest covers the case where Step 5 is skipped or fails, so review skills aren't blind.
+Before image generation, write `$OUTPUT_DIR/manifest.yaml` recording the local text-task run (field template in the run-local-pipeline skill, Step 4): `pipeline: infographic`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: agent-local`, `style_prompt` (resolved style path), `tasks_completed: [i0, i1, i2]`. The CLI image run in Step 5 refreshes media settings while preserving recorded text authorship. It records the resolved image model separately from the text authors.
 
 ### Step 5: Generate Images
 
@@ -134,3 +134,15 @@ After completion, report:
 - All text tasks (i0, i1, i2, and the i2 critique) are well-suited for local execution — they are structured, schema-driven, and have shorter reasoning chains.
 - The only external API cost is image generation in Step 5.
 - **Generalized equivalent:** `/run-local-pipeline infographic` runs the same text tasks (i0→i1→i2) but stops before image generation. Use this skill (`/infographic`) when you want the full end-to-end flow including images; use `/run-local-pipeline infographic` when you only need the text tasks.
+
+### Persist local authorship
+
+After each generated or refined text task, merge-update its actual author through the core helper (preserves skipped tasks):
+
+```python
+from pathlib import Path
+from polyptych.ext import record_task_provenance
+record_task_provenance(Path(output_dir), task, mode="local", model=local_model_id)
+```
+
+Use the active generating model ID for `local_model_id`, such as `gpt-6-astra`. CLI image resumes retain this attribution in `models` and `task_provenance`; `configured_models` is only configuration.

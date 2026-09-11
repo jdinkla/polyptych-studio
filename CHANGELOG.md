@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve recorded local/CLI text attribution across image-only and partial
+  resumes. Manifests separate configured models from recorded authors and include
+  the resolved image model as run configuration. Successful text responses,
+  including fallbacks, update shared task provenance; saving YAML no longer
+  attributes content to an unused configured model.
+
 ## [0.3.2] - 2026-09-05
 
 ### Changed

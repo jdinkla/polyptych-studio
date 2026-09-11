@@ -116,7 +116,7 @@ After the text tasks complete, write `$OUTPUT_DIR/manifest.yaml` so review skill
 
 ```yaml
 pipeline: <internal pipeline name>        # slide | infographic
-mode: local                               # marks a skill-mode run (CLI manifests have no mode field)
+mode: local                               # marks a skill-mode run (CLI resumes derive text mode from task provenance)
 timestamp: <UTC ISO-8601>                 # date -u +%Y-%m-%dT%H:%M:%S+00:00
 git_commit: <short hash>                  # git rev-parse --short HEAD
 source: <source file basename>            # e.g. essay.md (matches CLI: name only)
@@ -128,7 +128,7 @@ tasks_completed: [task1, task2, ...]      # text tasks that exist and validate
 Rules:
 - Omit keys with no value (the CLI strips `None` values the same way).
 - If a manifest already exists (partial earlier run), update `timestamp`, `git_commit`, and `tasks_completed`; preserve other fields unless this run changed them (e.g. a different `--style`).
-- A later CLI resume (`--from images`) overwrites this file with the full CLI manifest (image provider/size/quality etc.) — that is expected and fine; the local manifest's job is to cover the gap until then.
+- A later CLI resume (`--from images`) refreshes run settings and preserves recorded text authorship. `models` summarizes recorded authors; unused defaults appear only under `configured_models`.
 
 ### Step 5: Report
 
@@ -220,3 +220,15 @@ If task1–task4 already exist and validate, skips them and starts from task5.
 - The `/infographic` skill is a specialized equivalent of `/run-local-pipeline infographic` that also runs image generation. Use `/infographic` if you want images included; use `/run-local-pipeline infographic` if you only want the text tasks.
 - For image generation after text tasks, use the suggested `just` command or `/run-pipeline <pipeline> $SOURCE $OUTPUT_DIR --from images`.
 - All text tasks are well within the active coding agent's capabilities. The batched task A1 is the most demanding due to length, but generating it in a single pass avoids the complexity of batch merging.
+
+### Persist local authorship
+
+After each generated or refined text task, merge-update its actual author through the core helper (preserves skipped tasks):
+
+```python
+from pathlib import Path
+from polyptych.ext import record_task_provenance
+record_task_provenance(Path(output_dir), task, mode="local", model=local_model_id)
+```
+
+Use the active generating model ID for `local_model_id`, such as `gpt-6-astra`. CLI image resumes retain this attribution in `models` and `task_provenance`; `configured_models` is only configuration.

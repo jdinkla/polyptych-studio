@@ -153,4 +153,16 @@ For harder tasks, consider whether external LLM execution via `/run-pipeline` mi
 - For image-prompt tasks (task7, i2): read `prompts/providers/<provider>-best-practices.md` for the intended image provider and apply it while writing the prompts. For `task7`, also set the top-level `prompt_provider: <provider>` field in `task7-prompts.yaml` — the CLI warns at image time when the actual provider differs from the recorded one
 - `task7` writes each prompt once: author the `sections`, then set `full_prompt` to the deterministic assembly of those sections (order: GOAL, SUBJECT, COMPOSITION, SPATIAL RELATIONSHIPS (if any), SETTING, LIGHTING, TEXT ELEMENTS (if any), STYLE, FIDELITY, CONSISTENCY; `"SECTION: text"` paragraphs joined by blank lines — mirrors `assemble_full_prompt()` in `src/polyptych/tasks/task_07_prompts.py`). `text_elements` must include the slide's callout with the design system's `callout_treatment` `visual_spec` when `content.callout` is set
 - Fiction slide pipeline: `task2` emits `character_canon` (canonical per-character visual descriptions); `task6` must use those exact names in `characters_in_frame`; `task7` must embed each in-frame character's canonical description verbatim on every slide (see the run-local-pipeline skill, "Fiction Character Canon")
-- Maintain `manifest.yaml` in the output dir: if none exists, create one with `pipeline`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: agent-local`, plus `style_prompt` when applicable and `tasks_completed: [<this task>]` (field template in the run-local-pipeline skill, Step 4). If one exists, add the task to `tasks_completed` and refresh `timestamp`/`git_commit`. CLI runs overwrite it with the full CLI manifest later — expected.
+- Maintain `manifest.yaml` in the output dir: if none exists, create one with `pipeline`, `mode: local`, `timestamp` (UTC ISO-8601), `git_commit` (short hash), `source` (basename), `models: agent-local`, plus `style_prompt` when applicable and `tasks_completed: [<this task>]` (field template in the run-local-pipeline skill, Step 4). If one exists, add the task to `tasks_completed` and refresh `timestamp`/`git_commit`. CLI resumes refresh media settings while preserving the recorded text authors.
+
+### Persist local authorship
+
+After each generated or refined text task, merge-update its actual author through the core helper (preserves skipped tasks):
+
+```python
+from pathlib import Path
+from polyptych.ext import record_task_provenance
+record_task_provenance(Path(output_dir), task, mode="local", model=local_model_id)
+```
+
+Use the active generating model ID for `local_model_id`, such as `gpt-6-astra`. CLI image resumes retain this attribution in `models` and `task_provenance`; `configured_models` is only configuration.

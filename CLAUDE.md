@@ -208,10 +208,9 @@ expansion) usually explain why an image looks the way it does, and they are not
 recoverable from the user's command line alone. Cite the manifest's
 quality/style values when explaining why an output looks the way it does.
 
-Local skill runs (`/run-local-pipeline`, `/run-local-task`, `/infographic`)
-write a compatible manifest too (`mode: local`, `models: agent-local`,
-`tasks_completed`, plus the shared `pipeline`/`source`/`style_prompt`/
-`git_commit` fields); a later CLI image run overwrites it with the full manifest.
+CLI manifests preserve text attribution when resuming. `models` summarizes recorded local authors and successful API response models; `task_provenance` snapshots the per-task records from `provenance.yaml`. `configured_models` lists the current text configuration separately and does not imply those tasks ran. New CLI records include `model_source: response` and the responding provider, including fallbacks. Old CLI sidecar entries without that marker are marked `configured` and excluded from the verified model summary. Missing authors remain unknown (`models: []`); unverified old manifest model lists are retained as `legacy_models`.
+
+The image settings, including the resolved `image_model`, describe the latest invocation. They do not establish which model generated a cached image. `usage.jsonl` remains the per-call history; task provenance records the latest successful call for each task, so critique/refine calls have their own task keys rather than pretending to identify every contributor to a rewritten artifact. Local skills must merge-update their actual author in `provenance.yaml` after each generated task. An image-only resume preserves these entries. Unknown custom manifest fields are retained.
 
 ### Validation CLI
 

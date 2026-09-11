@@ -100,6 +100,11 @@ from .pipeline_base import (
 from .pipeline_infographic import SlidePipelineInfographicMixin
 from .pipeline_task import SlidePipelineTaskMixin
 from .pipeline import SlidePipeline
+from .provenance import (
+    PROVENANCE_FILENAME,
+    record_task_provenance,
+    task_for_output_file,
+)
 
 # --- image_batch: the building blocks for a pipeline's image step ---
 from .image_batch import (
@@ -197,6 +202,9 @@ __all__ = [
     "SlidePipelineInfographicMixin",
     "SlidePipelineTaskMixin",
     "SlidePipeline",
+    "PROVENANCE_FILENAME",
+    "record_task_provenance",
+    "task_for_output_file",
     # image_batch
     "BatchItem",
     "BatchResult",

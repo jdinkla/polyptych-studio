@@ -133,7 +133,7 @@ class TestWriteManifest:
         assert data["image_provider"] == "gemini"
         assert data["aspect_ratio"] == "16:9"
 
-    def test_single_model_collapses_to_scalar(
+    def test_unused_configured_model_is_not_an_author(
         self,
         tmp_path,
         source_text,
@@ -143,9 +143,10 @@ class TestWriteManifest:
         pipeline = _build_pipeline(tmp_path, source_text, test_model_config)
         pipeline._write_manifest("slide", PipelineRunConfig())
         data = yaml.safe_load((pipeline.output_dir / "manifest.yaml").read_text())
-        assert data["models"] == "test-model"
+        assert data["models"] == []
+        assert set(data["configured_models"].values()) == {"test-model"}
 
-    def test_multiple_models_kept_as_sorted_list(
+    def test_unused_configured_models_are_separate(
         self,
         tmp_path,
         source_text,
@@ -162,7 +163,11 @@ class TestWriteManifest:
         pipeline = _build_pipeline(tmp_path, source_text, mc)
         pipeline._write_manifest("slide", PipelineRunConfig())
         data = yaml.safe_load((pipeline.output_dir / "manifest.yaml").read_text())
-        assert data["models"] == ["gemini-fast", "gemini-thinking"]
+        assert data["models"] == []
+        assert data["configured_models"] == {
+            "task1": "gemini-fast",
+            "task2": "gemini-thinking",
+        }
 
     def test_none_values_stripped(
         self,
