@@ -82,7 +82,7 @@ def _add_advanced_image_args(parser: argparse.ArgumentParser) -> None:
         "--output-format",
         choices=["png", "jpeg", "webp"],
         default=None,
-        help="Output image format. OpenAI gpt-image-2 only; other providers "
+        help="Output image format. OpenAI GPT Image 2 / 2.5 only; other providers "
         "always emit PNG. Default: png.",
     )
     parser.add_argument(
@@ -91,7 +91,7 @@ def _add_advanced_image_args(parser: argparse.ArgumentParser) -> None:
         default=None,
         metavar="N",
         help="Compression level 0-100 for --output-format jpeg or webp. "
-        "OpenAI gpt-image-2 only.",
+        "OpenAI GPT Image 2 / 2.5 only.",
     )
 
 
@@ -116,8 +116,8 @@ def _add_image_flags(parser: argparse.ArgumentParser) -> None:
         "-s",
         type=str,
         default=None,
-        help="Output image size. gpt-image-2: any WxH with both dimensions "
-        "divisible by 16, aspect ratio within [1:3, 3:1], max edge 3840 — "
+        help="Output image size. GPT Image 2 / 2.5: any WxH with both dimensions "
+        "divisible by 16, aspect ratio within [1:3, 3:1], max edge 3840, total pixels 655360-8294400 — "
         "e.g. 1024x1024, 1024x1536, 1536x1024, 1152x2048 (true 9:16), "
         "2048x1152 (true 16:9), 2560x1440, 3840x2160. Gemini: 1K, 2K.",
     )
@@ -125,9 +125,9 @@ def _add_image_flags(parser: argparse.ArgumentParser) -> None:
         "--quality",
         "-q",
         type=str,
-        choices=["low", "medium", "high", "auto"],
+        choices=["low", "medium", "high", "xhigh", "max", "auto"],
         default=None,
-        help="Quality (OpenAI gpt-image-2 only). Defaults to high for "
+        help="Quality (OpenAI; xhigh/max require GPT Image 2.5). Defaults to high for "
         "slide and infographic.",
     )
     parser.add_argument(

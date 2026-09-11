@@ -46,12 +46,12 @@ Both image-producing subcommands (`deck`, `infographic`) accept the same image f
 
 - `--provider {gemini,openai,xai,vertex}` / `-p` — image generation provider. Per-pipeline default `gemini` when neither preset nor explicit flag sets it.
 - `--image-model` — override image model. Resolution: `--image-model` > `$POLYPTYCH_IMAGE_MODEL` (deprecated alias `$SLIDE_GEN_IMAGE_MODEL`) > `image_model_config.yaml` > provider built-in.
-- `--size` / `-s` — output image size. For OpenAI gpt-image-2: any `WxH` where both dimensions are divisible by 16, the aspect ratio is within `[1:3, 3:1]`, and `max(W, H) ≤ 3840`. Recommended values: `1024x1024`, `1024x1536`, `1536x1024`, `2048x1152` (true 16:9), `2560x1440`, `3840x2160`. Invalid sizes raise a clear error rather than being silently rewritten. For Gemini: `1K`, `2K`.
+- `--size` / `-s` — output image size. For OpenAI GPT Image 2 / 2.5: any `WxH` where both dimensions are divisible by 16, the aspect ratio is within `[1:3, 3:1]`, and `max(W, H) ≤ 3840`, total pixels in `[655360, 8294400]`. Recommended values: `1024x1024`, `1024x1536`, `1536x1024`, `2048x1152` (true 16:9), `2560x1440`, `3840x2160`. Invalid sizes raise a clear error rather than being silently rewritten. For Gemini: `1K`, `2K`.
 - `--aspect-ratio {16:9,4:3,3:4,9:16,1:1}` / `-a` — default `16:9`.
-- `--quality {low,medium,high,auto}` / `-q` — OpenAI gpt-image-2 only. When omitted, defaults to `high` for both `deck` and `infographic`.
-- `--ref-image PATH` *(repeatable)* — reference image applied to every generated image (brand asset, source chart, exemplar). Requires a provider that supports reference images (`openai` gpt-image-2, `gemini`); other providers raise an error if refs are passed.
-- `--output-format {png,jpeg,webp}` — OpenAI gpt-image-2 only; other providers always emit PNG. Default `png`.
-- `--compression N` — compression level 0-100 for `--output-format jpeg|webp`. OpenAI gpt-image-2 only.
+- `--quality {low,medium,high,xhigh,max,auto}` / `-q` — OpenAI GPT Image 2 / 2.5 only. When omitted, defaults to `high` for both `deck` and `infographic`.
+- `--ref-image PATH` *(repeatable)* — reference image applied to every generated image (brand asset, source chart, exemplar). Requires a provider that supports reference images (`openai` GPT Image 2 / 2.5, `gemini`); other providers raise an error if refs are passed.
+- `--output-format {png,jpeg,webp}` — OpenAI GPT Image 2 / 2.5 only; other providers always emit PNG. Default `png`.
+- `--compression N` — compression level 0-100 for `--output-format jpeg|webp`. OpenAI GPT Image 2 / 2.5 only.
 - `--style PATH` — path to a style-transfer markdown preset. **Sibling-image convention**: if a `<name>.png` / `<name>.jpg` / `<name>.jpeg` / `<name>.webp` exists next to `<name>.md`, it is auto-prepended to the reference list as a visual exemplar (provider-supporting refs only). Presets live in `prompts/style-transfer/`.
 
 #### Common text flags
@@ -59,6 +59,31 @@ Both image-producing subcommands (`deck`, `infographic`) accept the same image f
 - `--text-provider {gemini,openai,xai,anthropic,vertex}` — text/LLM provider (default: `gemini`).
 - `--text-fallback` — fallback provider chain for content-blocked or transient-error retries (default: auto = all other providers; use `none` to disable).
 - `--model` / `-m` — override all LLM models for this run (ignores per-task config). Also settable via `$POLYPTYCH_MODEL` (deprecated alias `$SLIDE_GEN_MODEL`).
+
+### GPT Image 2.5 presets
+
+`flare-{low,medium,high,xhigh,max}` and `sunburst-{low,medium,high,xhigh,max}`
+select the corresponding GPT Image 2.5 model explicitly at 1536×1024.
+For example, `--image-preset flare-low` or `--image-preset sunburst-high`.
+Override dimensions with `--size 2048x1152`, or quality with `--quality auto`.
+The `xhigh` and `max` settings require GPT Image 2.5; GPT Image 2 rejects them.
+Existing `openai-*` presets and defaults remain unchanged. Model aliases and the
+2.5 `-2026-09-08` snapshots can also be selected with `--image-model`.
+Resolutions above 2560×1440 are experimental; total pixels cannot exceed 8,294,400.
+See [OpenAI's size and quality rules](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options).
+
+These presets require the pixbridge implementation with GPT Image 2.5 support
+and the updated Polyptych CLI. Until those packages are released, use the local
+source checkouts together; installing the previous PyPI releases will reject
+the new model IDs or quality values.
+
+From this repository root, use the sibling source checkouts without changing
+locked dependencies (replace `source.md` with your input):
+
+```bash
+UV_NO_SYNC=1 PYTHONPATH="$PWD/src:$PWD/../pixbridge/src" \
+  uv run --no-sync polyptych infographic source.md --image-preset flare-low
+```
 
 ### `polyptych deck <source.md>`
 

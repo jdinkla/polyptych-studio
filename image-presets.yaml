@@ -32,3 +32,15 @@ openai-high:   { provider: "openai", size: "1536x1024", quality: "high" }
 # --- xAI ----------------------------------------------------------------------
 
 xai:           { provider: "xai", aspect-ratio: "16:9" }
+
+# --- OpenAI GPT Image 2.5 (explicit model, existing presets unchanged) ---
+flare-low: { provider: "openai", image-model: "gpt-image-2.5-flare", size: "1536x1024", quality: "low" }
+flare-medium: { provider: "openai", image-model: "gpt-image-2.5-flare", size: "1536x1024", quality: "medium" }
+flare-high: { provider: "openai", image-model: "gpt-image-2.5-flare", size: "1536x1024", quality: "high" }
+flare-xhigh: { provider: "openai", image-model: "gpt-image-2.5-flare", size: "1536x1024", quality: "xhigh" }
+flare-max: { provider: "openai", image-model: "gpt-image-2.5-flare", size: "1536x1024", quality: "max" }
+sunburst-low: { provider: "openai", image-model: "gpt-image-2.5-sunburst", size: "1536x1024", quality: "low" }
+sunburst-medium: { provider: "openai", image-model: "gpt-image-2.5-sunburst", size: "1536x1024", quality: "medium" }
+sunburst-high: { provider: "openai", image-model: "gpt-image-2.5-sunburst", size: "1536x1024", quality: "high" }
+sunburst-xhigh: { provider: "openai", image-model: "gpt-image-2.5-sunburst", size: "1536x1024", quality: "xhigh" }
+sunburst-max: { provider: "openai", image-model: "gpt-image-2.5-sunburst", size: "1536x1024", quality: "max" }

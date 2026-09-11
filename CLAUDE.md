@@ -83,21 +83,39 @@ image-generation flag set:
 - `--image-model` — override the image model; resolution: `--image-model` >
   `$POLYPTYCH_IMAGE_MODEL` (deprecated alias `$SLIDE_GEN_IMAGE_MODEL`) >
   `image_model_config.yaml` > provider built-in
-- `--size` — output size. OpenAI gpt-image-2: any `WxH` divisible by 16, aspect
-  ratio in `[1:3, 3:1]`, `max(W, H) ≤ 3840` (e.g. `1024x1024`, `1536x1024`,
+- `--size` — output size. OpenAI GPT Image 2 / 2.5: any `WxH` divisible by 16, aspect
+  ratio in `[1:3, 3:1]`, `max(W, H) ≤ 3840`, total pixels in `[655360, 8294400]` (e.g. `1024x1024`, `1536x1024`,
   `2048x1152`). Gemini: `1K` / `2K`. Invalid sizes raise a clear error.
 - `--aspect-ratio {16:9,4:3,3:4,9:16,1:1}` — default `16:9`
-- `--quality {low,medium,high,auto}` — OpenAI gpt-image-2 only; defaults to
+- `--quality {low,medium,high,xhigh,max,auto}` — OpenAI GPT Image 2 / 2.5 only; defaults to
   `high` for both slide and infographic
 - `--ref-image PATH` (repeatable) — reference image applied to every generated
   image; requires a provider that supports references (`openai`, `gemini`)
-- `--output-format {png,jpeg,webp}` / `--compression N` — OpenAI gpt-image-2 only
+- `--output-format {png,jpeg,webp}` / `--compression N` — OpenAI GPT Image 2 / 2.5 only
 - `--style PATH` — path to a style-transfer markdown preset. If a sibling image
   (`<name>.png/.jpg/.jpeg/.webp`) exists next to the `.md`, it is auto-prepended
   to the reference list (providers supporting refs only)
 
 **Resolution order** (highest wins): explicit CLI flag > `--pipeline-preset` >
 `--image-preset` > per-pipeline defaults > built-ins.
+
+
+### GPT Image 2.5 presets
+
+`flare-{low,medium,high,xhigh,max}` and `sunburst-{low,medium,high,xhigh,max}`
+select the corresponding GPT Image 2.5 model explicitly at 1536×1024.
+For example, `--image-preset flare-low` or `--image-preset sunburst-high`.
+Override dimensions with `--size 2048x1152`, or quality with `--quality auto`.
+The `xhigh` and `max` settings require GPT Image 2.5; GPT Image 2 rejects them.
+Existing `openai-*` presets and defaults remain unchanged. Model aliases and the
+2.5 `-2026-09-08` snapshots can also be selected with `--image-model`.
+Resolutions above 2560×1440 are experimental; total pixels cannot exceed 8,294,400.
+See [OpenAI's size and quality rules](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options).
+
+These presets require the pixbridge implementation with GPT Image 2.5 support
+and the updated Polyptych CLI. Until those packages are released, use the local
+source checkouts together; installing the previous PyPI releases will reject
+the new model IDs or quality values.
 
 ## Workflow: use `just gen`
 

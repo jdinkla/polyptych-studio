@@ -448,3 +448,30 @@ class TestMainValidationAfterPresets:
             monkeypatch, ["deck", "src.md", "--pipeline-preset", "fastish"]
         )
         assert rc == 0
+
+
+@pytest.mark.parametrize("family", ["flare", "sunburst"])
+@pytest.mark.parametrize("quality", ["low", "medium", "high", "xhigh", "max"])
+def test_image_25_presets_reach_provider(family: str, quality: str) -> None:
+    from pixbridge.providers.openai import OpenAIProvider
+
+    args = _parse_and_apply(
+        ["infographic", "source.md", "--image-preset", f"{family}-{quality}"],
+        "infographic",
+    )
+    assert args.provider == "openai"
+    assert args.image_model == f"gpt-image-2.5-{family}"
+    assert args.quality == quality
+    assert args.size == "1536x1024"
+    OpenAIProvider().validate_params(model=args.image_model, quality=args.quality, size=args.size)
+
+
+def test_image_25_preset_explicit_overrides() -> None:
+    args = _parse_and_apply(
+        ["infographic", "source.md", "--image-preset", "flare-low",
+         "--image-model", "gpt-image-2.5-sunburst", "--quality", "max",
+         "--size", "2048x1152"], "infographic",
+    )
+    assert (args.image_model, args.quality, args.size) == (
+        "gpt-image-2.5-sunburst", "max", "2048x1152",
+    )
