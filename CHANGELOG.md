@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-09-05
+
 ### Changed
 
+- Route Gemini 3.8 Flash reasoning effort to low for fast tasks and high for
+  thinking tasks, including Vertex AI. Apply explicit GPT-5.6 Terra effort too.
+- Let extensions register their model-config directory so installed wheels
+  honor extension text/image model defaults and task budgets.
 - Refresh text defaults to Gemini 3.8 Flash (Gemini and Vertex), GPT-5.6 Sol /
   GPT-6 Astra, Grok 4.6 (thinking), and Claude Sonnet 5 / Opus 5. Vertex's
   3.8 Flash is a short-term release; Astra API access depends on account rollout.

@@ -23,6 +23,14 @@ from .base import (
 T = TypeVar("T", bound=BaseModel)
 
 
+def _thinking_config(model: str, budget: int | None) -> types.ThinkingConfig | None:
+    """Route Gemini 3.8 tier intent without sending unsupported token budgets."""
+    if model == "gemini-3.8-flash" or model.startswith("gemini-3.8-flash-"):
+        level = types.ThinkingLevel.HIGH if budget else types.ThinkingLevel.LOW
+        return types.ThinkingConfig(thinking_level=level)
+    return None
+
+
 def _generate_content(client: genai.Client, **kwargs):
     """Call generate_content, retrying transient SDK/transport errors."""
 
@@ -101,6 +109,7 @@ class GeminiTextProvider(BaseTextProvider):
             config = types.GenerateContentConfig(
                 response_mime_type="application/json",
                 response_schema=response_schema,
+                thinking_config=_thinking_config(model, thinking_budget),
             )
             if system_instruction:
                 config.system_instruction = system_instruction
@@ -141,7 +150,9 @@ class GeminiTextProvider(BaseTextProvider):
         system_instruction: str | None = None,
         thinking_budget: int | None = None,
     ) -> tuple[str, TextGenerationResult]:
-        config = types.GenerateContentConfig()
+        config = types.GenerateContentConfig(
+            thinking_config=_thinking_config(model, thinking_budget),
+        )
         if system_instruction:
             config.system_instruction = system_instruction
 

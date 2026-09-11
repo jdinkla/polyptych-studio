@@ -1,10 +1,29 @@
 """Per-task model selection via config YAML."""
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import yaml
 
 from ._datafiles import data_path
+
+
+_CONFIG_DIRS: list[Path] = []
+
+
+def register_model_config_dir(directory: Path) -> None:
+    """Prefer an extension's model configs over the core's bundled defaults."""
+    directory = directory.resolve()
+    if directory not in _CONFIG_DIRS:
+        _CONFIG_DIRS.append(directory)
+
+
+def _config_path(filename: str) -> Path:
+    for directory in reversed(_CONFIG_DIRS):
+        candidate = directory / filename
+        if candidate.is_file():
+            return candidate
+    return data_path(filename)
 
 
 @dataclass
@@ -31,7 +50,7 @@ def load_model_config(override: str | None = None) -> ModelConfig:
     Returns:
         ModelConfig with providers and tasks populated.
     """
-    config_path = data_path("model_config.yaml")
+    config_path = _config_path("model_config.yaml")
     if not config_path.exists():
         raise FileNotFoundError(f"model_config.yaml not found at {config_path}")
     with open(config_path) as f:
@@ -112,7 +131,7 @@ def load_image_model_config(override: str | None = None) -> ImageModelConfig:
     Returns:
         ImageModelConfig with providers populated.
     """
-    config_path = data_path("image_model_config.yaml")
+    config_path = _config_path("image_model_config.yaml")
     if not config_path.exists():
         return ImageModelConfig()
 
@@ -153,7 +172,7 @@ def resolve_thinking_budget(
     """Look up the extended thinking budget for a pipeline step.
 
     Returns None for fast tasks and providers without budget/effort routing.
-    Modern OpenAI, xAI and Claude models translate this into reasoning effort;
+    Modern Gemini, OpenAI, xAI and Claude models translate this into reasoning effort;
     legacy Claude overrides use an exact token budget.
 
     Args:
@@ -164,7 +183,7 @@ def resolve_thinking_budget(
     Returns:
         Thinking budget in tokens, or None if not applicable.
     """
-    if provider not in {"anthropic", "openai", "xai"}:
+    if provider not in {"anthropic", "openai", "xai", "gemini", "vertex"}:
         return None
     tier = config.tasks.get(task_name, "fast")
     if tier == "fast":

@@ -80,7 +80,7 @@ class TestResolveMaxOutputTokens:
         assert resolve_max_output_tokens(sample_config, "task1") is None
 
 
-@pytest.mark.parametrize("provider", ["anthropic", "openai", "xai"])
+@pytest.mark.parametrize("provider", ["anthropic", "openai", "xai", "gemini", "vertex"])
 def test_thinking_tier_routes_budget(sample_config, provider):
     sample_config.thinking_budget = {"default": 10240, "n1": 16384}
     assert resolve_thinking_budget(sample_config, "task2", provider) == 10240
@@ -91,7 +91,7 @@ def test_thinking_tier_routes_budget(sample_config, provider):
     assert resolve_thinking_budget(sample_config, "task2", provider) == 0
 
 
-@pytest.mark.parametrize("provider", ["gemini", "vertex", "unknown"])
+@pytest.mark.parametrize("provider", ["unknown"])
 def test_unhandled_providers_keep_default_reasoning(sample_config, provider):
     assert resolve_thinking_budget(sample_config, "task2", provider) is None
 

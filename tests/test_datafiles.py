@@ -64,3 +64,37 @@ def test_presets_read_from_bundled_data(bundled: Path) -> None:
 
     assert load_image_preset("gem") == {"provider": "gemini"}
     assert load_pipeline_preset("slide", "fast") == {"concurrent": 4}
+
+
+def test_extension_model_configs_override_wheel_defaults(
+    bundled, tmp_path, monkeypatch
+):
+    from polyptych import model_config as models
+
+    monkeypatch.setattr(models, "_CONFIG_DIRS", [])
+    extension = tmp_path / "extension"
+    extension.mkdir()
+    (extension / "model_config.yaml").write_text(
+        "providers:\n  openai:\n    fast: gpt-5.6-terra\n    thinking: gpt-5.6-sol\n"
+        "tasks:\n  custom_task: thinking\nthinking_budget:\n  custom_task: 16384\n"
+    )
+    models.register_model_config_dir(extension)
+    monkeypatch.chdir(tmp_path)
+    config = models.load_model_config()
+    assert config.providers["openai"]["thinking"] == "gpt-5.6-sol"
+    assert models.resolve_thinking_budget(config, "custom_task", "openai") == 16384
+    assert models.load_model_config(override="override").providers["openai"] == {
+        "fast": "override",
+        "thinking": "override",
+    }
+    # Missing extension image config falls back independently to the wheel.
+    assert models.load_image_model_config().providers == {"gemini": "img-m"}
+    (extension / "image_model_config.yaml").write_text(
+        "providers:\n  xai: grok-imagine-image-2.0\n"
+    )
+    assert models.load_image_model_config().providers == {
+        "xai": "grok-imagine-image-2.0"
+    }
+    assert models.load_image_model_config(override="custom").providers == {
+        "xai": "custom"
+    }

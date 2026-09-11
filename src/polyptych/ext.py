@@ -39,6 +39,8 @@ from .pipeline_config import (
     find_resume_step,
 )
 
+from .model_config import register_model_config_dir
+
 # --- task_registry: TaskSpec primitive, the core spec list, lookups ---
 from .task_registry import (
     Pipeline as CorePipeline,
@@ -157,6 +159,7 @@ __all__ = [
     "task_spec",
     "get_task",
     "register_tasks",
+    "register_model_config_dir",
     "tasks_for_pipeline",
     # run_config
     "InfographicRunConfig",

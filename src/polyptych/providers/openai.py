@@ -19,7 +19,11 @@ T = TypeVar("T", bound=BaseModel)
 
 def _reasoning_kwargs(model: str, thinking_budget: int | None) -> dict:
     """Translate tier intent for the configured models, not an exact token budget."""
-    for name, fast_effort in (("gpt-5.6-sol", "none"), ("gpt-6-astra", "low")):
+    for name, fast_effort in (
+        ("gpt-5.6-sol", "none"),
+        ("gpt-5.6-terra", "none"),
+        ("gpt-6-astra", "low"),
+    ):
         if model == name or model.startswith(name + "-"):
             return {"reasoning_effort": "high" if thinking_budget else fast_effort}
     return {}
