@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Require pixbridge 0.2.4 or newer so the GPT Image 2.5 presets work with
   the published image provider package.
-
 - Route Gemini 3.8 Flash reasoning effort to low for fast tasks and high for
   thinking tasks, including Vertex AI. Apply explicit GPT-5.6 Terra effort too.
 - Let extensions register their model-config directory so installed wheels
@@ -40,7 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - GPT Image 2.5 Flare and Sunburst image presets with model-specific `xhigh`
   and `max` quality options.
-
 - **Codex repository support** — `AGENTS.md` loads the shared project guidance,
   `.agents/skills` exposes the existing agent workflows to Codex, and
   `.codex/` provides the prompt/config reviewer plus compatible safety and

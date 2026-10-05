@@ -72,18 +72,8 @@ Existing `openai-*` presets and defaults remain unchanged. Model aliases and the
 Resolutions above 2560×1440 are experimental; total pixels cannot exceed 8,294,400.
 See [OpenAI's size and quality rules](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options).
 
-These presets require the pixbridge implementation with GPT Image 2.5 support
-and the updated Polyptych CLI. Until those packages are released, use the local
-source checkouts together; installing the previous PyPI releases will reject
-the new model IDs or quality values.
-
-From this repository root, use the sibling source checkouts without changing
-locked dependencies (replace `source.md` with your input):
-
-```bash
-UV_NO_SYNC=1 PYTHONPATH="$PWD/src:$PWD/../pixbridge/src" \
-  uv run --no-sync polyptych infographic source.md --image-preset flare-low
-```
+These presets require polyptych 0.3.2 or newer, which pulls in pixbridge 0.2.4
+or newer. Older releases reject the new model IDs and quality values.
 
 ### `polyptych deck <source.md>`
 

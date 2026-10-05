@@ -112,10 +112,8 @@ Existing `openai-*` presets and defaults remain unchanged. Model aliases and the
 Resolutions above 2560×1440 are experimental; total pixels cannot exceed 8,294,400.
 See [OpenAI's size and quality rules](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options).
 
-These presets require the pixbridge implementation with GPT Image 2.5 support
-and the updated Polyptych CLI. Until those packages are released, use the local
-source checkouts together; installing the previous PyPI releases will reject
-the new model IDs or quality values.
+These presets require polyptych 0.3.2 or newer, which pulls in pixbridge 0.2.4
+or newer. Older releases reject the new model IDs and quality values.
 
 ## Workflow: use `just gen`
 
