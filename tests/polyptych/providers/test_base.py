@@ -17,6 +17,7 @@ from polyptych.providers.base import (
     map_openai_sdk_transient,
     repair_truncated_json,
     retry_on_transient,
+    strip_code_fence,
 )
 from polyptych.providers import (
     get_text_provider,
@@ -209,6 +210,30 @@ class TestParseAndValidate:
             provider._parse_and_validate("not json at all", _Item)
         # Raw text dumped to debug file for postmortem.
         assert (tmp_path / "debug-_Item.json").exists()
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            '```json\n{"name": "alice", "value": 7}\n```',
+            '```\n{"name": "alice", "value": 7}\n```\n',
+            '  ```json\n{"name": "alice", "value": 7}```',
+        ],
+    )
+    def test_fenced_json_validates(self, text):
+        # Claude Sonnet 5.5 copies the prompt's ```json schema fence.
+        out = _StubProvider()._parse_and_validate(text, _Item)
+        assert out == _Item(name="alice", value=7)
+
+    def test_fenced_truncated_json_repairs(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        out = _StubProvider()._parse_and_validate(
+            '```json\n{"name": "alice", "value": 7', _Item
+        )
+        assert out == _Item(name="alice", value=7)
+
+    def test_fence_inside_string_is_untouched(self):
+        text = '{"name": "```json", "value": 7}'
+        assert strip_code_fence(text) == text
 
     def test_none_input_raises_json_error(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)

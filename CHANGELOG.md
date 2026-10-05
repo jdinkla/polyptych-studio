@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Accept structured replies wrapped in a markdown code fence. Claude Sonnet 5.5
+  at high effort fences its JSON, which previously failed to parse.
+
 ## [0.3.2] - 2026-09-11
 
 ### Fixed

@@ -3,6 +3,7 @@
 import json
 import os
 import random
+import re
 import sys
 import time
 from abc import ABC, abstractmethod
@@ -26,6 +27,16 @@ _TRANSIENT_MAX_DELAY_S = 30.0
 
 # Module-level sleep reference so tests can patch it (no real sleeping).
 _sleep = time.sleep
+
+
+# A reply wrapped whole in one markdown fence; the closing fence may be cut off.
+_CODE_FENCE_RE = re.compile(r"^\s*```[\w-]*[ \t]*\n(.*?)(?:\n?```\s*)?$", re.DOTALL)
+
+
+def strip_code_fence(text: str) -> str:
+    """Unwrap JSON that a model returned inside a ```json fence."""
+    match = _CODE_FENCE_RE.match(text)
+    return match.group(1) if match else text
 
 
 def repair_truncated_json(text: str) -> dict | None:
@@ -246,6 +257,8 @@ class BaseTextProvider(ABC):
             pydantic.ValidationError: if complete (non-truncated) JSON fails validation.
         """
         was_repaired = False
+        if json_text:
+            json_text = strip_code_fence(json_text)
         try:
             data = json.loads(json_text or "")
         except (json.JSONDecodeError, TypeError):
