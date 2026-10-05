@@ -55,6 +55,12 @@ If no argument is given, treat it as `all`. If a non-empty argument doesn't matc
    - Is the current id still listed by the provider?
    - Is there a newer stable or preview successor?
    - Are there new tiers worth adding (e.g. a new "mini" / "nano" / "reasoning" model that fits `fast` or `thinking`)?
+   - Recommend the newest like-for-like model even when repo docs say an earlier release "kept defaults unchanged" — that records a past release decision, not a standing policy. Ask only when there are two genuinely different successors, and give a recommendation.
+
+   **Check what a swap breaks before proposing it:**
+   - Grep `src/polyptych/providers/` for the current and proposed ids (`grep -rn "<id>" src/polyptych/providers/`). Providers keep per-model tables for reasoning/thinking settings; an unmapped new id silently falls back to provider defaults. Every proposed text-model swap must name the table entry it needs.
+   - Read each proposed model's migration guide or "what's new" page for request parameters it now rejects (e.g. Claude Sonnet 5.5 and Opus 5.5 reject `thinking: {"type": "disabled"}` with a 400). Include these in the proposed diff, not just the id change.
+   - For image models, check which presets in `image-presets.yaml` inherit the default (no `image-model` key) — they move with it.
 
 5. **Present a summary table** to the user, separated by config file. Example:
 
@@ -80,7 +86,7 @@ If no argument is given, treat it as `all`. If a non-empty argument doesn't matc
    - `✗ deprecated` — current id is deprecated or removed
    - `? unknown` — couldn't determine status
 
-6. **If updates are available**, show the exact YAML changes needed for the affected file(s) as a diff, but **do NOT apply them automatically**. Ask the user whether to apply.
+6. **If updates are available**, show the exact YAML changes needed for the affected file(s) as a diff, but **do NOT apply them automatically**. Ask the user whether to apply. After applying, verify with a live smoke call per changed model (fast and thinking tier) — unit tests mock the SDKs and cannot catch rejected parameters.
 
 ## Important Notes
 

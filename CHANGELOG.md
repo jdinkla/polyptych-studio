@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Send `thinking: between_tools` to Sonnet 5.5 for fast tasks, and omit the
   thinking field for Opus 5.5 and Fable 5.1. All three reject
   `thinking: disabled`. Route Grok 4.7 effort like Grok 4.6.
+- Require `anthropic>=0.109`, the SDK version the Claude 5.5 request shapes
+  were verified against.
 
 ### Fixed
 
