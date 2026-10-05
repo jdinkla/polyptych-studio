@@ -2,7 +2,7 @@
 
 When generating prompts for OpenAI's GPT Image model family, apply these guidelines to optimize image quality, text rendering, and spatial composition.
 
-> **Active model**: `gpt-image-2` (see `image_model_config.yaml`). The guidance below assumes gpt-image-2; differences from older `gpt-image-1` / `gpt-image-1.5` are noted inline.
+> **Active model**: `gpt-image-2.5-sunburst` (see `image_model_config.yaml`). The guidance below was written for gpt-image-2 and still applies to the 2.5 line; differences from older `gpt-image-1` / `gpt-image-1.5` are noted inline.
 
 ## What's New in gpt-image-2
 

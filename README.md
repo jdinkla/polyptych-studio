@@ -58,7 +58,7 @@ or export them however you manage secrets):
 | Provider | Environment variable |
 |----------|---------------------|
 | Gemini (text + image) | `GOOGLE_API_KEY` |
-| OpenAI (text + gpt-image-2) | `OPENAI_API_KEY` |
+| OpenAI (text + GPT Image) | `OPENAI_API_KEY` |
 | xAI / Grok | `XAI_API_KEY` |
 | Anthropic Claude | `ANTHROPIC_API_KEY` |
 | Vertex AI | Application Default Credentials (`gcloud auth application-default login`) |

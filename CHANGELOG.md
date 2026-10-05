@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Default Anthropic text models are now Claude Sonnet 5.5 (fast) and Claude
   Opus 5.5 (thinking). The default xAI thinking model is now Grok 4.7.
+- The default OpenAI image model is now `gpt-image-2.5-sunburst`, which also
+  applies to the `openai-*` presets. Use `--image-model gpt-image-2` for the
+  previous model.
 - Send `thinking: between_tools` to Sonnet 5.5 for fast tasks, and omit the
   thinking field for Opus 5.5 and Fable 5.1. All three reject
   `thinking: disabled`. Route Grok 4.7 effort like Grok 4.6.

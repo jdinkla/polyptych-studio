@@ -6,6 +6,6 @@
 # fallback chain. Image generation: Gemini and OpenAI (xAI / Vertex optional).
 
 export GOOGLE_API_KEY=...      # Gemini (text + image)
-export OPENAI_API_KEY=...      # OpenAI (text + gpt-image-2)
+export OPENAI_API_KEY=...      # OpenAI (text + GPT Image)
 export XAI_API_KEY=...         # xAI / Grok (optional)
 export ANTHROPIC_API_KEY=...   # Anthropic Claude (optional, text fallback)

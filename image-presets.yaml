@@ -23,7 +23,7 @@ gem:           { provider: "gemini", size: "1K", aspect-ratio: "16:9" }
 gem-2k:        { provider: "gemini", size: "2K", aspect-ratio: "16:9" }   # infographic-grade legibility
 gem-lite:      { provider: "gemini", size: "1K", aspect-ratio: "16:9", image-model: "gemini-3.1-flash-lite-image" }   # Nano Banana 2 Lite: cheapest/fastest, 1K only
 
-# --- OpenAI gpt-image-2 -------------------------------------------------------
+# --- OpenAI (model from image_model_config.yaml: gpt-image-2.5-sunburst) -----
 
 openai-low:    { provider: "openai", size: "1536x1024", quality: "low" }
 openai-medium: { provider: "openai", size: "1536x1024", quality: "medium" }

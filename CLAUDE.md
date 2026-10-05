@@ -107,7 +107,8 @@ select the corresponding GPT Image 2.5 model explicitly at 1536×1024.
 For example, `--image-preset flare-low` or `--image-preset sunburst-high`.
 Override dimensions with `--size 2048x1152`, or quality with `--quality auto`.
 The `xhigh` and `max` settings require GPT Image 2.5; GPT Image 2 rejects them.
-Existing `openai-*` presets and defaults remain unchanged. Model aliases and the
+The OpenAI default, and with it the `openai-*` presets, is `gpt-image-2.5-sunburst`.
+Pass `--image-model gpt-image-2` to use GPT Image 2. Model aliases and the
 2.5 `-2026-09-08` snapshots can also be selected with `--image-model`.
 Resolutions above 2560×1440 are experimental; total pixels cannot exceed 8,294,400.
 See [OpenAI's size and quality rules](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options).
