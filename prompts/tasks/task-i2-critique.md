@@ -14,7 +14,7 @@ You will receive:
 2. **I1 design specification (YAML)** — sections, palette, flow description, visual style
 3. **I2 image prompts (YAML)** — the prompt variants to audit
 4. **Style transfer preset** (optional) — the visual style the image will be rendered with
-5. **Rendering quality tier** (optional) — low / medium / high / auto; calibrates legible text density
+5. **Rendering quality tier** (optional) — low / medium / high / xhigh / max / auto; calibrates legible text density
 
 ## Output Format
 
@@ -71,7 +71,7 @@ Compare the I1 `flow_description` and section placements against the prompt's sp
 
 - **low**: title, section headers, and a handful of large labels only — flag captions, sub-labels, dense panels
 - **medium**: headers plus moderate labeling — flag long small-type panels
-- **high / auto**: full density acceptable — flag only unreasonably tiny text
+- **high / xhigh / max / auto**: full density acceptable — flag only unreasonably tiny text
 - Also flag the opposite failure: trimming far below what the tier supports, wasting legibility headroom on an information-dense graphic
 
 ### 6. Style Fidelity (`style_drift`)
@@ -82,6 +82,8 @@ If a style preset is provided:
 - Are the prompt's colors drawn from the preset's palette?
 
 ### 7. Specificity Check (`vague_or_overloaded`)
+
+- Are all quoted in-image strings in the language of the I0 title? A label described or quoted in another language (e.g. "East" for a German "Ost") renders wrong — flag it as `important`
 
 - Is each section described concretely enough to render correctly (positions, colors, exact text)?
 - Is any single region overloaded with more elements than can render legibly?

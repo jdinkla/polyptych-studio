@@ -41,6 +41,21 @@ The infographic is organized as [layout pattern description].
 No brand logos, trademarks, or stylized corporate wordmarks. Company names in plain text only.
 ```
 
+### Language of In-Image Text
+
+All text that appears in the image (title, headers, labels, numbers with
+units) uses the language of the I0 title and labels, which follow the source.
+The prompt's instructions may be in English, but never translate the quoted
+strings, and never describe a label in another language than the one it must
+render in (write `labeled "Ost 54 %"`, not "labeled East").
+
+### Charts with a Wide Value Range
+
+When compared values span orders of magnitude (e.g. 0.1× to 25×), give the
+reference entity its own bar rather than a reference line. Image models tend to
+draw a "= 1" reference line as the chart's axis, which makes the small values
+unreadable. State bar lengths as explicit proportions of the longest bar.
+
 ### Variant Differentiation
 
 Create meaningfully different variants by varying:
@@ -74,7 +89,7 @@ label entirely.
   tertiary labels, and prefer one short label per visual element.
 - **medium**: Section headers plus moderate labeling. Short captions are fine;
   avoid long panels of small type.
-- **high / auto**: Full label density is acceptable, including small captions
+- **high / xhigh / max / auto**: Full label density is acceptable, including small captions
   and dense panels.
 
 If no tier is given, assume dense text is acceptable but keep every string

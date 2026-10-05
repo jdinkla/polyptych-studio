@@ -63,6 +63,13 @@ Identify the primary structural pattern:
 
 Recommend 3-6 major sections for the infographic based on this structure.
 
+## Language
+
+Write every reader-facing field (title, subtitle, thesis, key point statements,
+relationship labels, visualizable descriptions and values) in the language of the source text. A German source
+yields German titles and labels. Correct obvious transcription errors in names
+and terms (e.g. speech-to-text misspellings) rather than copying them.
+
 ## Output
 
 Produce all analysis in the structured JSON format specified. Be thorough but concise — every field should contain information useful for designing a single-page infographic.

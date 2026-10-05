@@ -16,8 +16,8 @@ Other gpt-image-2 changes worth knowing:
 
 - **No `input_fidelity` parameter** — input images are processed at high fidelity automatically.
 - **Flexible resolutions** — any size with both edges multiples of 16, max edge ≤3840px, total pixels ≤8.3M, ≤3:1 aspect ratio. (Older GPT Image models had fixed presets.)
-- **Quality tiers** — `low` / `medium` / `high` / `auto`. Fixed-token cost model; `high` no longer disproportionately expensive.
-- **Transparent backgrounds are not supported** for gpt-image-2 (use `background: opaque` or `auto`).
+- **Quality tiers** — `low` / `medium` / `high` / `auto`; GPT Image 2.5 (Flare, Sunburst) adds `xhigh` and `max`, which GPT Image 2 rejects. Fixed-token cost model; `high` no longer disproportionately expensive.
+- **Transparent backgrounds are not supported** for gpt-image-2 (unverified for 2.5). Polyptych sends no `background` parameter, so do not ask for transparency in prompts.
 
 ## Prompt Ordering for gpt-image-2
 
@@ -98,7 +98,7 @@ Be explicit about framing and composition:
 
 ## Quality, Size & Cost
 
-- **Quality**: `low` for drafts and high-volume runs, `medium` as a default, `high` for text-heavy slides / infographics / final assets, `auto` to let the model pick. The slide and infographic pipelines both default to `high` on OpenAI.
+- **Quality**: `low` for drafts and high-volume runs, `medium` as a default, `high` for text-heavy slides / infographics / final assets, `xhigh` / `max` (GPT Image 2.5 only) for the densest text at higher cost, `auto` to let the model pick. The slide and infographic pipelines both default to `high` on OpenAI.
 - **Recommended sizes** (both edges divisible by 16, aspect ratio within [1:3, 3:1], max edge ≤3840px):
   - `1024x1024` — square
   - `1024x1536` — HD portrait

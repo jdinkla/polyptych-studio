@@ -47,13 +47,22 @@ For each section, specify:
    - `process_steps`: Numbered or connected steps
    - `pyramid`: Hierarchical triangle/pyramid
    - `venn_diagram`: Overlapping circles showing relationships
-   - `bar_chart`: Comparative bars
+   - `bar_chart`: Comparative bars. When values span orders of magnitude
+     (e.g. 0.1× to 25×), give the reference entity its own bar instead of a
+     reference line, and state bar lengths as proportions of the longest bar.
    - `pie_chart`: Proportional segments
    - `matrix`: 2x2 or larger categorization grid
 
 2. **Visual description** — Describe what the visual element should contain and look like in enough detail that an image generation model could render it.
 
 3. **Placement** — Where this section sits within the infographic.
+
+## Language
+
+Write section titles, `title_treatment`, and every label quoted inside
+`visual_description` in the language of the I0 title, which follows the
+source. These strings reach the image verbatim. Keep the design-vocabulary
+values (layout, element, placement, style names) as specified.
 
 ## Color Palette
 

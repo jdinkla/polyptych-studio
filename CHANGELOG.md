@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `thinking: disabled`. Route Grok 4.7 effort like Grok 4.6.
 - Require `anthropic>=0.109`, the SDK version the Claude 5.5 request shapes
   were verified against.
+- Infographic prompts (i0, i1, i2, critique, refine) now keep in-image text in
+  the source's language, and give the reference entity its own bar in charts
+  that span orders of magnitude. Text-density rules and the OpenAI guide cover
+  the GPT Image 2.5 `xhigh` / `max` quality tiers.
 
 ### Fixed
 

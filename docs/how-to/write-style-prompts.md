@@ -2,7 +2,7 @@
 
 Both pipelines accept `--style PATH`, pointing at a style-transfer markdown preset under `prompts/style-transfer/`. The preset's directives are folded into image-prompt generation so every image in the run shares a coherent visual aesthetic. This guide covers how to write a preset that actually bites — image generators have strong defaults, and a weak preset gets ignored.
 
-If a sibling image (`<name>.png` / `.jpg` / `.jpeg` / `.webp`) sits next to `<name>.md`, it is auto-prepended to the reference list as a visual exemplar for providers that support reference images (`openai` gpt-image-2, `gemini`). A good exemplar image is often worth more than another paragraph of prose.
+If a sibling image (`<name>.png` / `.jpg` / `.jpeg` / `.webp`) sits next to `<name>.md`, it is auto-prepended to the reference list as a visual exemplar for providers that support reference images (`openai` GPT Image 2 / 2.5, `gemini`). A good exemplar image is often worth more than another paragraph of prose.
 
 ## The Core Problem
 

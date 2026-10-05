@@ -51,3 +51,4 @@ Do not modify variants — or sections within a variant — that were not flagge
 - Keep each variant a complete, self-contained prompt
 - Update `generation_notes.key_requirements` to reflect any content swaps
 - Keep the brand-safety constraint: no logos or trademarked marks, company names in plain text only
+- Keep in-image strings in the language of the I0 title; never translate quoted strings, including content you restore

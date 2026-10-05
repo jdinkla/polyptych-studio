@@ -612,7 +612,7 @@ image_prompt:
 ### 6.3 Downstream Uses
 
 These specifications can be used to:
-1. Generate images via any supported provider (Gemini, OpenAI gpt-image-2, xAI Grok)
+1. Generate images via any supported provider (Gemini, OpenAI GPT Image 2 / 2.5, xAI Grok)
 2. Create slides in presentation software (using Task 6 specs)
 3. Guide human designers in production
 4. Validate generated images against requirements
