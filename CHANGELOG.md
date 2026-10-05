@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-09-11
+
 ### Fixed
 
 - Preserve recorded local/CLI text attribution across image-only and partial
@@ -15,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   including fallbacks, update shared task provenance; saving YAML no longer
   attributes content to an unused configured model.
 
-## [0.3.2] - 2026-09-05
-
 ### Changed
+
+- Require pixbridge 0.2.4 or newer so the GPT Image 2.5 presets work with
+  the published image provider package.
 
 - Route Gemini 3.8 Flash reasoning effort to low for fast tasks and high for
   thinking tasks, including Vertex AI. Apply explicit GPT-5.6 Terra effort too.
@@ -34,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   retain their reasoning behavior.
 
 ### Added
+
+- GPT Image 2.5 Flare and Sunburst image presets with model-specific `xhigh`
+  and `max` quality options.
 
 - **Codex repository support** — `AGENTS.md` loads the shared project guidance,
   `.agents/skills` exposes the existing agent workflows to Codex, and

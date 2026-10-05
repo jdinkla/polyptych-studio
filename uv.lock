@@ -708,7 +708,7 @@ wheels = [
 
 [[package]]
 name = "pixbridge"
-version = "0.2.0"
+version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-genai" },
@@ -718,9 +718,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2c/6b/d70111802413909bc397fad02dc9cb7f71d1e15d0ff4048479805d8d10b0/pixbridge-0.2.0.tar.gz", hash = "sha256:da9f50338be36feb75eaa327893bfed176880d83d4995885ad45d84774b53650", size = 64559, upload-time = "2026-06-13T19:34:52.48Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/23/32/956787ad33ea639e06373be6ce3f2161d7122c56268f92f3d8dc38734073/pixbridge-0.2.4.tar.gz", hash = "sha256:71a26cedd2efe3e5c04cd80b03e3c452d3a8b7f6e8edaacc6f861f53e44b81ce", size = 69323, upload-time = "2026-09-11T16:07:37.245Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e5/41/4103508e0cf59e385ed4714a1648da8ccf07d9a1e1f927e6df9fbf4751eb/pixbridge-0.2.0-py3-none-any.whl", hash = "sha256:4db94753ae0b0c044758b480aa45c5e562c66c9815c4ca7adf1ab9f169fbfe15", size = 40831, upload-time = "2026-06-13T19:34:51.307Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/ce/3d44e39ac18bdf97a0fb8224d11c0e5e566df525ff78af2ac4764a26f890/pixbridge-0.2.4-py3-none-any.whl", hash = "sha256:df50e975a8b4df569b9c6afd0175b56173d661cbc96dca9d4e68089f47267c10", size = 42522, upload-time = "2026-09-11T16:07:36.146Z" },
 ]
 
 [[package]]
@@ -761,7 +761,7 @@ requires-dist = [
     { name = "google-genai", specifier = ">=1.0,<2" },
     { name = "openai", specifier = ">=2.0,<3" },
     { name = "pillow", specifier = ">=12.0,<13" },
-    { name = "pixbridge", specifier = ">=0.2.0" },
+    { name = "pixbridge", specifier = ">=0.2.4" },
     { name = "pydantic", specifier = ">=2.0,<3" },
     { name = "pyyaml", specifier = ">=6.0,<7" },
     { name = "requests", specifier = ">=2.28,<3" },
