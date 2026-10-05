@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 
 def _reasoning_kwargs(model: str, thinking_budget: int | None) -> dict:
-    """Grok 4.6 supports effort, but cannot disable reasoning."""
-    if model == "grok-4.6" or model.startswith("grok-4.6-"):
+    """Grok 4.6 and 4.7 support effort, but cannot disable reasoning."""
+    if any(model == n or model.startswith(n + "-") for n in ("grok-4.6", "grok-4.7")):
         return {"reasoning_effort": "high" if thinking_budget else "low"}
     return {}
 

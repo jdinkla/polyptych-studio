@@ -14,10 +14,10 @@ providers:
     thinking: gpt-6-astra
   xai:
     fast: grok-4.20-non-reasoning
-    thinking: grok-4.6
+    thinking: grok-4.7
   anthropic:
-    fast: claude-sonnet-5
-    thinking: claude-opus-5
+    fast: claude-sonnet-5-5
+    thinking: claude-opus-5-5
   vertex:
     # Short-term release: retires 45 days after its successor on Vertex.
     fast: gemini-3.8-flash
@@ -54,8 +54,9 @@ max_output_tokens:
 
 # Per-task extended thinking budgets (applies only to providers that support it)
 # Tasks not listed use the default. Fast-tier tasks pass no thinking budget.
-# Sol and Claude 5 disable thinking without a budget; Astra and Grok 4.6 use
-# low effort (reasoning cannot be disabled). A positive budget selects high
+# Sol and Claude 5 disable thinking without a budget; Sonnet 5.5 sends
+# between_tools; Astra, Grok 4.6/4.7, Opus 5.5 and Fable 5.1 use low effort
+# (reasoning cannot be disabled). A positive budget selects high
 # effort on these models, not an exact token allowance. Legacy Claude models
 # still use token budgets. Gemini/Vertex currently use provider thinking defaults.
 # Output limits include reasoning tokens on reasoning-capable providers.

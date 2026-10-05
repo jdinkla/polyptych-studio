@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Default Anthropic text models are now Claude Sonnet 5.5 (fast) and Claude
+  Opus 5.5 (thinking). The default xAI thinking model is now Grok 4.7.
+- Send `thinking: between_tools` to Sonnet 5.5 for fast tasks, and omit the
+  thinking field for Opus 5.5 and Fable 5.1. All three reject
+  `thinking: disabled`. Route Grok 4.7 effort like Grok 4.6.
+
 ### Fixed
 
 - Accept structured replies wrapped in a markdown code fence. Claude Sonnet 5.5

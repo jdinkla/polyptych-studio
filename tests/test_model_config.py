@@ -105,7 +105,7 @@ def test_current_default_models():
         "thinking": "gpt-6-astra",
     }
     assert config.providers["anthropic"] == {
-        "fast": "claude-sonnet-5",
-        "thinking": "claude-opus-5",
+        "fast": "claude-sonnet-5-5",
+        "thinking": "claude-opus-5-5",
     }
-    assert config.providers["xai"]["thinking"] == "grok-4.6"
+    assert config.providers["xai"]["thinking"] == "grok-4.7"

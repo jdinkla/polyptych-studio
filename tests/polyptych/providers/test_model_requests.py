@@ -73,6 +73,7 @@ def test_gemini_tier_requests(provider_type, structured, tier, model, monkeypatc
         (OpenAITextProvider, "gpt-6-astra-2026-09-03", "low"),
         (OpenAITextProvider, "gpt-4.1", None),
         (XAITextProvider, "grok-4.6", "low"),
+        (XAITextProvider, "grok-4.7", "low"),
         (XAITextProvider, "grok-4.20-non-reasoning", None),
     ],
 )
@@ -122,9 +123,18 @@ def test_chat_requests(provider_type, model, fast_effort, budget, structured):
 @pytest.mark.parametrize("structured", [False, True])
 @pytest.mark.parametrize("budget", [None, 0, 10240])
 @pytest.mark.parametrize(
-    "model", ["claude-sonnet-5", "claude-opus-5", "claude-opus-5-20260903"]
+    "model,thinking_off",
+    [
+        ("claude-sonnet-5", {"type": "disabled"}),
+        ("claude-opus-5", {"type": "disabled"}),
+        ("claude-opus-5-20260903", {"type": "disabled"}),
+        # Sonnet 5.5, Opus 5.5 and Fable 5.1 reject "disabled" with a 400.
+        ("claude-sonnet-5-5", {"type": "between_tools"}),
+        ("claude-opus-5-5", None),
+        ("claude-fable-5-1", None),
+    ],
 )
-def test_claude_5_requests(model, budget, structured):
+def test_claude_5_requests(model, thinking_off, budget, structured):
     provider = AnthropicTextProvider(api_key="test-key")
     client = MagicMock()
     provider._client = client
@@ -149,7 +159,12 @@ def test_claude_5_requests(model, budget, structured):
         result, _ = provider.generate_text("hello", model, thinking_budget=budget)
         assert result == '{"answer":"ok"}'
     kwargs = client.messages.create.call_args.kwargs
-    assert kwargs["thinking"] == {"type": "adaptive" if budget else "disabled"}
+    if budget:
+        assert kwargs["thinking"] == {"type": "adaptive"}
+    elif thinking_off is None:
+        assert "thinking" not in kwargs
+    else:
+        assert kwargs["thinking"] == thinking_off
     assert kwargs["output_config"] == {"effort": "high" if budget else "low"}
     # Adaptive effort must not silently increase the configured output cap.
     assert kwargs["max_tokens"] == (8000 if structured else 16384)

@@ -22,6 +22,25 @@ T = TypeVar("T", bound=BaseModel)
 
 DEFAULT_MAX_TOKENS = 16384
 
+# Adaptive-thinking models and the thinking setting sent without a budget.
+# None omits the field: thinking is always on, and effort is the only control.
+# Longer ids come first because "claude-sonnet-5-5" also matches "claude-sonnet-5-".
+_ADAPTIVE_THINKING_OFF: tuple[tuple[str, dict | None], ...] = (
+    ("claude-sonnet-5-5", {"type": "between_tools"}),
+    ("claude-opus-5-5", None),
+    ("claude-fable-5-1", None),
+    ("claude-sonnet-5", {"type": "disabled"}),
+    ("claude-opus-5", {"type": "disabled"}),
+)
+
+
+def _adaptive_thinking_off(model: str) -> tuple[bool, dict | None]:
+    """Return (is_adaptive, thinking setting for budgetless tasks)."""
+    for name, thinking_off in _ADAPTIVE_THINKING_OFF:
+        if model == name or model.startswith(name + "-"):
+            return True, thinking_off
+    return False, None
+
 
 def _create(client: anthropic.Anthropic, **kwargs):
     """Call the messages endpoint, retrying transient SDK errors."""
@@ -123,12 +142,12 @@ class AnthropicTextProvider(BaseTextProvider):
         }
         if system_instruction:
             kwargs["system"] = system_instruction
-        adaptive = any(
-            model == name or model.startswith(name + "-")
-            for name in ("claude-sonnet-5", "claude-opus-5")
-        )
+        adaptive, thinking_off = _adaptive_thinking_off(model)
         if adaptive:
-            kwargs["thinking"] = {"type": "adaptive" if thinking_budget else "disabled"}
+            if thinking_budget:
+                kwargs["thinking"] = {"type": "adaptive"}
+            elif thinking_off is not None:
+                kwargs["thinking"] = thinking_off
             kwargs["output_config"] = {"effort": "high" if thinking_budget else "low"}
         elif thinking_budget:
             # Ensure max_tokens accommodates thinking + output
