@@ -57,3 +57,6 @@ htmlcov/
 generated/
 .claude/settings.local.json
 usage.jsonl
+
+# LLM reply dumps from older versions (now written to $POLYPTYCH_DEBUG_DIR)
+debug-*.json

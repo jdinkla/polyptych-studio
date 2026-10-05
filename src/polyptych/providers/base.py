@@ -5,6 +5,7 @@ import os
 import random
 import re
 import sys
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable
@@ -31,6 +32,18 @@ _sleep = time.sleep
 
 # A reply wrapped whole in one markdown fence; the closing fence may be cut off.
 _CODE_FENCE_RE = re.compile(r"^\s*```[\w-]*[ \t]*\n(.*?)(?:\n?```\s*)?$", re.DOTALL)
+
+
+def _debug_dump_path(schema_name: str) -> Path:
+    """Where to dump unparseable or invalid replies, outside the working tree.
+
+    ``$POLYPTYCH_DEBUG_DIR`` wins; otherwise a ``polyptych-debug`` folder in the
+    system temp dir. Dumping into the CWD used to litter the repository root.
+    """
+    root = os.environ.get("POLYPTYCH_DEBUG_DIR")
+    folder = Path(root) if root else Path(tempfile.gettempdir()) / "polyptych-debug"
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder / f"debug-{schema_name}.json"
 
 
 def strip_code_fence(text: str) -> str:
@@ -264,7 +277,7 @@ class BaseTextProvider(ABC):
         except (json.JSONDecodeError, TypeError):
             data = repair_truncated_json(json_text or "")
             if data is None:
-                dump_path = Path(f"debug-{response_schema.__name__}.json")
+                dump_path = _debug_dump_path(response_schema.__name__)
                 dump_path.write_text(json_text or "", encoding="utf-8")
                 print(
                     f"  ERROR: Failed to parse {response_schema.__name__} response. "
@@ -279,7 +292,7 @@ class BaseTextProvider(ABC):
         try:
             return response_schema.model_validate(data)
         except Exception:
-            dump_path = Path(f"debug-{response_schema.__name__}.json")
+            dump_path = _debug_dump_path(response_schema.__name__)
             dump_path.write_text(
                 json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
             )

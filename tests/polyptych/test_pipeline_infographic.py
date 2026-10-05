@@ -457,3 +457,31 @@ class TestInfographicValidatorRegistration:
         assert INFOGRAPHIC_MODELS["i0"].__name__ == "TaskI0Output"
         assert INFOGRAPHIC_MODELS["i1"].__name__ == "TaskI1Output"
         assert INFOGRAPHIC_MODELS["i2"].__name__ == "TaskI2Output"
+
+
+class _RecordingImageClient(MockImageClient):
+    def __init__(self) -> None:
+        super().__init__()
+        self.prompts: list[str] = []
+
+    def generate_image(self, prompt, output_dir: Path, **kwargs) -> Path:
+        self.prompts.append(prompt.full_prompt)
+        return super().generate_image(prompt, output_dir, **kwargs)
+
+
+def test_infographic_images_fold_negatives(
+    tmp_path, source_text, infographic_model_config, mock_client
+):
+    """Locally authored i2 YAML skips run_task_i2; negatives must still apply."""
+    variant = _variant(1)
+    variant.generation_notes.negative_prompts = ["icons", "gradients"]
+    pipeline = _build_pipeline(
+        tmp_path, source_text, infographic_model_config, mock_client
+    )
+    image_client = _RecordingImageClient()
+    with patch.object(pipeline, "_make_image_client", return_value=image_client):
+        pipeline._run_infographic_images(
+            TaskI2Output(variants=[variant]), provider="openai"
+        )
+
+    assert image_client.prompts == [variant.full_prompt + "\n\nAVOID: icons, gradients."]

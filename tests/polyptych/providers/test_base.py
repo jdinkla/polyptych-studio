@@ -162,7 +162,7 @@ class TestParseAndValidate:
         assert out == _Item(name="alice", value=7)
 
     def test_truncated_json_repairs_then_validates(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         provider = _StubProvider()
         # Truncated mid-string — repair closes the string.
         out = provider._parse_and_validate(
@@ -176,13 +176,13 @@ class TestParseAndValidate:
         tmp_path,
         monkeypatch,
     ):
-        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         provider = _StubProvider()
         # Repair will close the string, but the schema requires `value: int`
         # which is missing — repaired dict fails validation.
         with pytest.raises(TruncatedOutputError):
             provider._parse_and_validate('{"name": "alice"', _Item)
-        # Debug dump file is written to CWD with the schema name.
+        # Debug dump goes to $POLYPTYCH_DEBUG_DIR, named after the schema.
         assert (tmp_path / "debug-_Item.json").exists()
 
     def test_complete_invalid_raises_validation_error(
@@ -190,7 +190,7 @@ class TestParseAndValidate:
         tmp_path,
         monkeypatch,
     ):
-        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         provider = _StubProvider()
         # Valid JSON, but `value` is wrong type and not truncated.
         with pytest.raises(ValidationError):
@@ -204,7 +204,7 @@ class TestParseAndValidate:
         tmp_path,
         monkeypatch,
     ):
-        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         provider = _StubProvider()
         with pytest.raises(json.JSONDecodeError):
             provider._parse_and_validate("not json at all", _Item)
@@ -225,7 +225,7 @@ class TestParseAndValidate:
         assert out == _Item(name="alice", value=7)
 
     def test_fenced_truncated_json_repairs(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         out = _StubProvider()._parse_and_validate(
             '```json\n{"name": "alice", "value": 7', _Item
         )
@@ -235,8 +235,17 @@ class TestParseAndValidate:
         text = '{"name": "```json", "value": 7}'
         assert strip_code_fence(text) == text
 
-    def test_none_input_raises_json_error(self, tmp_path, monkeypatch):
+    def test_debug_dump_defaults_to_temp_dir_not_cwd(self, tmp_path, monkeypatch):
+        monkeypatch.delenv("POLYPTYCH_DEBUG_DIR", raising=False)
+        monkeypatch.setattr(base_mod.tempfile, "gettempdir", lambda: str(tmp_path / "tmp"))
         monkeypatch.chdir(tmp_path)
+        with pytest.raises(json.JSONDecodeError):
+            _StubProvider()._parse_and_validate("not json at all", _Item)
+        assert (tmp_path / "tmp" / "polyptych-debug" / "debug-_Item.json").exists()
+        assert not (tmp_path / "debug-_Item.json").exists()
+
+    def test_none_input_raises_json_error(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("POLYPTYCH_DEBUG_DIR", str(tmp_path))
         provider = _StubProvider()
         with pytest.raises(json.JSONDecodeError):
             provider._parse_and_validate(None, _Item)

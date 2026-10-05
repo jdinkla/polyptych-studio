@@ -180,6 +180,7 @@ Use `--mode <genre>` to override auto-detection.
 | `GOOGLE_CLOUD_PROJECT` | Required project ID for the Vertex AI provider; auth via ADC |
 | `POLYPTYCH_MODEL` | Override all LLM models (ignores per-task config). `--model` takes precedence. |
 | `POLYPTYCH_IMAGE_MODEL` | Override image generation model for all providers. `--image-model` takes precedence. |
+| `POLYPTYCH_DEBUG_DIR` | Where unparseable LLM replies are dumped as `debug-<Schema>.json`. Default: `polyptych-debug` in the system temp dir. |
 | `POLYPTYCH_LOG_LEVEL` | Default log level (`DEBUG`/`INFO`/`WARNING`/`ERROR`/`CRITICAL`). `--log-level` takes precedence. |
 | `POLYPTYCH_USAGE_LOG` | Path for the API usage JSONL log. Default: `~/.cache/polyptych/usage.jsonl`. Pipelines that write to their own output dir (e.g. `output_dir/usage.jsonl`) are unaffected — this controls only the fallback used when no explicit path is passed. |
 

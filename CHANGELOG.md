@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Accept structured replies wrapped in a markdown code fence. Claude Sonnet 5.5
   at high effort fences its JSON, which previously failed to parse.
+- Apply `negative_prompts` at image-generation time for both pipelines.
+  Prompts written by local skill runs skip the text-task code that folded them
+  in, so their negatives were silently dropped.
+- Write `debug-<Schema>.json` dumps of unparseable replies to
+  `$POLYPTYCH_DEBUG_DIR` (default: `polyptych-debug` in the system temp dir)
+  instead of the current working directory.
 
 ## [0.3.2] - 2026-09-11
 

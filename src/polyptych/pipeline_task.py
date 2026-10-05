@@ -38,6 +38,7 @@ from .image_batch import (
     ImageBatchGenerator,
 )
 from .run_config import SlideRunConfig
+from .text_utils import fold_negatives_into_prompt
 from .tasks import (
     run_task_01,
     run_task_02,
@@ -411,6 +412,11 @@ class SlidePipelineTaskMixin(PipelineMixin):
 
         def build(slide_prompt: SlideImagePrompt) -> BuiltPrompt:
             prompt_data = slide_prompt.image_prompt.model_dump()
+            # Locally authored task7 YAML skips finalize_draft; fold here too.
+            prompt_data["full_prompt"] = fold_negatives_into_prompt(
+                prompt_data["full_prompt"],
+                prompt_data["generation_notes"].get("negative_prompts"),
+            )
             return BuiltPrompt(ImageGenPrompt.model_validate(prompt_data))
 
         return ImageBatchGenerator(

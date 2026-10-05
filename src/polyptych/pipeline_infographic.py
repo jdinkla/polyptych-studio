@@ -27,6 +27,7 @@ from .pipeline_config import (
     _make_step_logger,
 )
 from .run_config import InfographicRunConfig
+from .text_utils import fold_negatives_into_prompt
 from .tasks import (
     run_task_i0,
     run_task_i1,
@@ -287,7 +288,12 @@ class SlidePipelineInfographicMixin(PipelineMixin):
         def build(variant) -> BuiltPrompt:
             return BuiltPrompt(
                 ImageGenPrompt(
-                    full_prompt=variant.full_prompt,
+                    # Fold at image time too: locally authored i2 YAML has not
+                    # passed through run_task_i2. Idempotent for CLI output.
+                    full_prompt=fold_negatives_into_prompt(
+                        variant.full_prompt,
+                        variant.generation_notes.negative_prompts,
+                    ),
                     generation_notes=ImageGenNotes(
                         **variant.generation_notes.model_dump()
                     ),
