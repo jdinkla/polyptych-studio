@@ -10,10 +10,12 @@ keyword (``major`` / ``minor`` / ``patch``) applied to the current version in
 
   1. rewrites ``version = "..."`` under ``[project]`` in ``pyproject.toml``,
   2. runs ``uv build`` (sdist + wheel into ``dist/``),
-  3. prints the ``uv publish`` command to run by hand.
+  3. prints the commit, tag, and ``uv publish`` commands to run by hand.
 
 It deliberately does NOT publish, commit, or tag — those stay manual so a
-release is never one fat-fingered command away from going public.
+release is never one fat-fingered command away from going public. It does
+refuse to run on a dirty working tree: the build must come from committed
+sources (plus the version bump), so the release tag matches what ships.
 """
 
 from __future__ import annotations
@@ -49,6 +51,23 @@ def _bump(current: str, part: str) -> str:
     if part == "minor":
         return f"{major}.{minor + 1}.0"
     return f"{major}.{minor}.{patch + 1}"
+
+
+def _require_clean_tree() -> None:
+    """Exit unless the git working tree has no modified or untracked files.
+
+    Untracked files count: hatch includes non-ignored untracked files in the
+    sdist, so they would ship without being in any commit.
+    """
+    status = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    if status.strip():
+        sys.exit("Working tree is not clean; commit or stash these first:\n" + status)
 
 
 def _resolve_target(arg: str, current: str) -> str:
@@ -90,6 +109,8 @@ def main() -> int:
     if len(sys.argv) != 2:
         sys.exit("Usage: python scripts/release.py <X.Y.Z | major | minor | patch>")
 
+    _require_clean_tree()
+
     current = _current_version()
     new = _resolve_target(sys.argv[1], current)
 
@@ -116,9 +137,12 @@ def main() -> int:
     print()
     print("Built. Review the CHANGELOG diff before tagging.")
     print()
-    print("Validate, then publish with:")
+    print("Validate, commit, tag, then publish with:")
     print("  uvx twine check dist/*")
+    print(f'  git commit -am "chore: release {new}"')
+    print(f'  git tag -m "Release {new}" v{new}')
     print(f"  uv publish --token <pypi-token>   # publishes {new}")
+    print(f"  git push && git push origin v{new}")
     return 0
 
 
