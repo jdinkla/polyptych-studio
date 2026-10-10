@@ -54,7 +54,11 @@ render in (write `labeled "Ost 54 %"`, not "labeled East").
 When compared values span orders of magnitude (e.g. 0.1× to 25×), give the
 reference entity its own bar rather than a reference line. Image models tend to
 draw a "= 1" reference line as the chart's axis, which makes the small values
-unreadable. State bar lengths as explicit proportions of the longest bar.
+unreadable. Describe bar lengths in words relative to other bars ("Europa
+about two fifths as long as NATO", "Russland a short stub"), never as
+percentages or numbers: image models print layout numbers as labels, so
+"40%" ends up next to the bar. Add "do not print bar lengths or percentages
+that are not in the TEXT list" to the constraints.
 
 ### Variant Differentiation
 

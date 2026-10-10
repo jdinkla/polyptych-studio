@@ -49,7 +49,9 @@ For each section, specify:
    - `venn_diagram`: Overlapping circles showing relationships
    - `bar_chart`: Comparative bars. When values span orders of magnitude
      (e.g. 0.1× to 25×), give the reference entity its own bar instead of a
-     reference line, and state bar lengths as proportions of the longest bar.
+     reference line. Describe bar lengths in words relative to other bars
+     ("about two fifths as long as NATO"), never as percentages, which image
+     models print as labels.
    - `pie_chart`: Proportional segments
    - `matrix`: 2x2 or larger categorization grid
 
